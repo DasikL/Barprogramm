@@ -15,6 +15,12 @@ public class BarprogrammApplication {
 
     @GetMapping("/")
     public String apiRoot() {
-        return "Hello World";
+        return "<h1>Barprogramm API</h1> " +
+                "<p>API for the bar program of the AMK</p>" +
+                "<p>Endpoints:</p>" +
+                " <ul> <li>/api/v1/bardienst/alle</li>" +
+                " <li>/api/v1/bardienst/create</li>" +
+                " <li>/api/v1/bardienst/{zimmer}</li>" +
+                " <li>/api/v1/benutzer/create</li> </ul>";
     }
 }
