@@ -1,0 +1,33 @@
+package amk.Barprogramm;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/v1/bardienst")
+public class BardienstController {
+
+    @Autowired
+    private BardienstService bardienstService;
+
+    @CrossOrigin
+    @GetMapping("/alle")
+    public ResponseEntity<List<Bardienst>> getAlleBardienste() {
+        return new ResponseEntity<List<Bardienst>>(bardienstService.getAlleBardienste(), HttpStatus.OK);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Bardienst> createBardienst(@RequestBody Bardienst bardienst) {
+        return new ResponseEntity<Bardienst>(bardienstService.createBardienst(bardienst), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{zimmer}")
+    public ResponseEntity<Optional<List<Bardienst>>> getBardienstById(@PathVariable String zimmer) {
+        return new ResponseEntity<Optional<List<Bardienst>>>(bardienstService.getBardiensteByZimmer(zimmer), HttpStatus.OK);
+    }
+}

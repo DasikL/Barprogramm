@@ -1,0 +1,30 @@
+package amk.Barprogramm;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "produkte")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Produkt {
+    @Id
+    private ObjectId id;
+    private int produktId;
+    private String name;
+    private int bestand;
+    private float preis;
+    private boolean aktiv;
+
+    public Integer getProduktId() {
+        return produktId;
+    }
+
+    public void setProduktId(int i) {
+        this.produktId = i;
+    }
+}
