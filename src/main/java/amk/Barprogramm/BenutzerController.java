@@ -16,4 +16,9 @@ public class BenutzerController {
     public ResponseEntity<Benutzer> createBenutzer(@RequestBody Benutzer benutzer) {
         return new ResponseEntity<Benutzer>(benutzerService.createBenutzer(benutzer), HttpStatus.CREATED);
     }
+
+    @GetMapping("/check/{zimmer}/{name}")
+    public ResponseEntity<Boolean> checkBenutzer(@PathVariable String zimmer, @PathVariable String name) {
+        return new ResponseEntity<Boolean>(benutzerService.checkBenutzer(zimmer, name), HttpStatus.OK);
+    }
 }

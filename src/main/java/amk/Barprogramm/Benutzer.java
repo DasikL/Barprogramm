@@ -33,4 +33,8 @@ public class Benutzer {
     public void setId(ObjectId id) {
         this.id = id;
     }
+
+    public String getName() {
+        return name;
+    }
 }

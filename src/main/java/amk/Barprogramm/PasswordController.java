@@ -12,7 +12,7 @@ public class PasswordController {
     @Autowired
     private PasswordService passwordService;
 
-    @GetMapping
+    @PostMapping
     public ResponseEntity<Boolean> checkPassword(@RequestBody String password) {
         return new ResponseEntity<Boolean>(passwordService.checkPassword(password), HttpStatus.OK);
     }
