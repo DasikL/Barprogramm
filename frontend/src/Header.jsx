@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { ObkContext } from "./App";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
 
-  const [obk, setObk] = useState(false);
+  const navigate = useNavigate();
+  const obk = useContext(ObkContext);
   const [password, setPassword] = useState("");
 
   async function checkOBK(){
@@ -19,20 +22,25 @@ function Header() {
       e.preventDefault();
       return;
     }
-    const isObk = checkOBK();
+   const isObk = checkOBK();
+    
     if(isObk){
-      alert("Login erfolgreich!");
+      obk[1](true);
+      navigate("/obk");
     }
-    setObk(isObk);
     e.preventDefault();
+
   }
 
 
   return (
     <div>
-      <button>Login</button>
       <div>
-      <button>OBK</button>
+      <button onClick={() => {
+        if(obk[0]){
+          navigate("/obk");
+        }
+      }}>OBK</button>
       
       <form onSubmit={(e) => handleSubmit(e)}>
       <input type="password" id="password" onChange={(e) => setPassword(e.target.value)}/>

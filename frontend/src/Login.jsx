@@ -1,11 +1,10 @@
-import {useContext, useState} from 'react';
-import {UserContext, LogInContext} from './App';
+import { useContext, useState, useEffect } from "react";
+import { UserContext, LogInContext } from "./App";
+import { useNavigate } from "react-router-dom";
 
-
-function Login(){
-
+function Login() {
   const bardienst = useContext(UserContext);
-  const login = useContext(LogInContext);
+  const navigate = useNavigate();
 
   const [name, setName] = useState("");
   const [znummer, setZnummer] = useState("");
@@ -19,37 +18,52 @@ function Login(){
     "300","301","302","303","304","305","306","307","308","309","310","311","312","313",
     "350","351","352","353","354","355","356","357","358","359","360"];
 
+  useEffect(() => {
+    if (localStorage.getItem("loggedIn")) {
+      navigate("/barliste");
+    }
+  }, []);
+
+
   async function checkBenutzer() {
-    const response = await fetch("http://localhost:8080/api/v1/benutzer/check/"+znummer+"/"+name, {method: "GET"});
+    const response = await fetch(
+      "http://localhost:8080/api/v1/benutzer/check/" + znummer + "/" + name,
+      { method: "GET" },
+    );
     const data = await response.json();
     return data;
   }
 
-
-  function handleSubmit(e){
-
-    if(name === "" || znummer === ""){
+  function handleSubmit(e) {
+    if (name === "" || znummer === "") {
       alert("Bitte füllen Sie alle Felder aus!");
       e.preventDefault();
       return;
     }
-    if(!Zimmer.includes(znummer)){
+    if (!Zimmer.includes(znummer)) {
       alert("Bitte geben Sie eine gültige Zimmernummer ein!");
       e.preventDefault();
       return;
     }
     const exists = checkBenutzer();
 
-    if(exists){
-    const date = new Date();
-    bardienst[1](prev =>({...prev, name: name, zimmer: znummer, datum: date.toISOString().split('T')[0], uhrzeit: date.toISOString().split('T')[1].split('.')[0]}));
-    login[1](true);
+    if (exists) {
+      const date = new Date();
+      bardienst[1]((prev) => ({
+        name: name,
+        zimmer: znummer,
+        datum: date.toISOString().split("T")[0],
+        uhrzeit: date.toISOString().split("T")[1].split(".")[0],
+        anfangsbestand: {},
+        endbestand: {},
+      }));
+      localStorage.setItem("loggedIn", true);
+      navigate("/barliste");
     }
-  
+
     // TODO: Fragen ob es der erste Bardienst ist und wenn ja User in die Datenbank eintragen und alten Zimmerbesitzer löschen
     // Idee: Videoerklärung für den Benutzer beim ersten Bardienst
     e.preventDefault();
-
   }
 
   return (
@@ -57,9 +71,17 @@ function Login(){
       <h1>Login</h1>
       <form onSubmit={(e) => handleSubmit(e)}>
         <label htmlFor="name">Name:</label>
-        <input type="text" id="name" onChange={(e) => setName(e.target.value)}/>
+        <input
+          type="text"
+          id="name"
+          onChange={(e) => setName(e.target.value)}
+        />
         <label htmlFor="znummer">Zimmernummer:</label>
-        <input type="number" id="znummer" onChange={(e) => setZnummer(e.target.value)}/>
+        <input
+          type="number"
+          id="znummer"
+          onChange={(e) => setZnummer(e.target.value)}
+        />
         <input type="submit" value="Bardienst beginnen" />
       </form>
     </div>
