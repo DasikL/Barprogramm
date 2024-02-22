@@ -28,37 +28,84 @@ function Barliste(props) {
   }, []);
 
   const upload = (e) => {
+    if (checkInput() === false) {
+      e.preventDefault();
+      return;
+    }
+
+    fetch("http://localhost:8080/api/v1/bardienst/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bardienst[0]),
+    });
+    bardienst[1]((prev) => ({
+      ...prev,
+      anfangsbestand: {},
+      endbestand: {},
+      kommentar: "",
+      name: "",
+      zimmer: "",
+      datum: "",
+      uhrzeit: "",
+    }));
+    localStorage.clear();
+    sessionStorage.clear();
+    navigate("/");
+    e.preventDefault();
+  };
+
+  function checkInput() {
+    let check = true;
     if (
       Object.keys(anfangsbestand).length !== props.props.length ||
       Object.keys(endbestand).length !== props.props.length
     ) {
       alert("Bitte füllen Sie alle Felder aus!");
-      e.preventDefault();
-      return;
-    } else {
-      fetch("http://localhost:8080/api/v1/bardienst/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bardienst[0]),
-      });
-      bardienst[1]((prev) => ({
-        ...prev,
-        anfangsbestand: {},
-        endbestand: {},
-        kommentar: "",
-        name: "",
-        zimmer: "",
-        datum: "",
-        uhrzeit: "",
-      }));
-      localStorage.clear();
-      sessionStorage.clear();
-      navigate("/");
-      e.preventDefault();
+      return false;
     }
-  };
+    Object.keys(anfangsbestand).forEach((key) => {
+      const anfang = parseInt(anfangsbestand[key]);
+      const end = parseInt(endbestand[key]);
+      if (anfang < end) {
+        check = false;
+      }
+    });
+    if (!check) {
+      alert("Endbestand darf nicht größer als Anfangsbestand sein!");
+      return false;
+    }
+  }
+
+  function anfangsbestandChange(e, item) {
+    if (e.target.value === item.bestand.toString()) {
+      e.target.style.color = "black";
+    } else {
+      e.target.style.color = "red";
+    }
+    setAnfangsbestang((prev) => ({
+      ...prev,
+      [item.produktId]: e.target.value,
+    }));
+    setAnfangsbestang((prev) => ({
+      ...prev,
+      [item.produktId]: e.target.value,
+    }));
+
+    bardienst[1]((prev) => ({
+      ...prev,
+      anfangsbestand: anfangsbestand,
+    }));
+  }
+
+  function endbestandChange(e, item) {
+    setEndbestand((prev) => ({
+      ...prev,
+      [item.produktId]: e.target.value,
+    }));
+    bardienst[1]((prev) => ({ ...prev, endbestand: endbestand }));
+  }
 
   return (
     <div>
@@ -66,44 +113,20 @@ function Barliste(props) {
       {props.props.map((item, index) => {
         return (
           <div key={index}>
+            <img src={"src/assets/" + item.name + ".jpg"} alt={item.name} />
             <h3>{item.name}</h3>
             <p>Preis: {item.preis} €</p>
             <p>Anfangsbestand:</p>
             <input
               type="number"
               value={anfangsbestand[item.produktId]}
-              onChange={(e) => {
-                if (e.target.value === item.bestand.toString()) {
-                  e.target.style.color = "black";
-                } else {
-                  e.target.style.color = "red";
-                }
-                setAnfangsbestang((prev) => ({
-                  ...prev,
-                  [item.produktId]: e.target.value,
-                }));
-                setAnfangsbestang((prev) => ({
-                  ...prev,
-                  [item.produktId]: e.target.value,
-                }));
-
-                bardienst[1]((prev) => ({
-                  ...prev,
-                  anfangsbestand: anfangsbestand,
-                }));
-              }}
+              onChange={(e) => anfangsbestandChange(e, item)}
             />
             <p>Endbestand:</p>
             <input
               type="number"
               value={endbestand[item.produktId]}
-              onChange={(e) => {
-                setEndbestand((prev) => ({
-                  ...prev,
-                  [item.produktId]: e.target.value,
-                }));
-                bardienst[1]((prev) => ({ ...prev, endbestand: endbestand }));
-              }}
+              onChange={(e) => endbestandChange(e, item)}
             />
           </div>
         );

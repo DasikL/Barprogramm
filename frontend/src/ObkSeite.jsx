@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ObkContext } from "./App"; 
+import ProduktSeite from "./ProduktSeite";
 
 
 function ObkSeite() {
@@ -18,8 +19,8 @@ function ObkSeite() {
   return (
     <div>
       <h1>ObkSeite</h1>
+    <ProduktSeite />
      // Benutzerseiten mit Bardiensten und Gewinn und Verlust
-    // Produktseiten mit Lagerbestand, Preis, Gewinn und mittelwerte der Verkäufe 
     // Seite um Nachfrage zu prognostizieren, sowie aufgrund der Prognose eine Bestellung vorgeschlagen bekommt
     </div>
   );
