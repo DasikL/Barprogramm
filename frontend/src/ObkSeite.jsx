@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ObkContext } from "./App"; 
 import ProduktSeite from "./ProduktSeite";
+import BenutzerSeite from "./BenutzerSeite";
 
 
 function ObkSeite() {
@@ -10,18 +11,24 @@ function ObkSeite() {
   const obk = React.useContext(ObkContext);
 
   React.useEffect(() => {
-    if (!obk[0]) {
+    if (obk[0] === false) {
       navigate("/");
     }
-  }) 
+  },[navigate, obk]) 
+
+  function abmelden() {
+    obk[1](false);
+  }
 
 
   return (
     <div>
       <h1>ObkSeite</h1>
-    <ProduktSeite />
-     // Benutzerseiten mit Bardiensten und Gewinn und Verlust
+    <button onClick={() => abmelden()}>Abmelden</button>
+    <BenutzerSeite />
+    {// Benutzerseiten mit Bardiensten und Gewinn und Verlust
     // Seite um Nachfrage zu prognostizieren, sowie aufgrund der Prognose eine Bestellung vorgeschlagen bekommt
+    }
     </div>
   );
 }

@@ -22,6 +22,7 @@ public class Bardienst {
     private String datum;
     private String uhrzeit;
     private String kommentar;
+    private Double[] geld;
     private Map<String, Integer> anfangsbestand;
     private Map<String, Integer> endbestand;
 
@@ -40,7 +41,11 @@ public class Bardienst {
         return endbestand;
     }
 
-    public Object getZimmer() {
+    public String getZimmer() {
         return zimmer;
+    }
+
+    public String getDatum() {
+        return datum;
     }
 }

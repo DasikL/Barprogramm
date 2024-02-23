@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from "react";
+import { useState, useEffect, createContext } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import Barliste from "./Barliste";
@@ -38,6 +38,7 @@ function App() {
         datum: "",
         uhrzeit: "",
         kommentar: "",
+        geld: [],
         anfangsbestand: {},
         endbestand: {},
       };

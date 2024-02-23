@@ -90,6 +90,10 @@ public class ProduktService {
                 .matching(Criteria.where("produktId").is(produkt.getProduktId()))
                 .apply(new Update().set("aktiv", produkt.isAktiv()))
                 .first();
+        mongoTemplate.update(Produkt.class)
+                .matching(Criteria.where("produktId").is(produkt.getProduktId()))
+                .apply(new Update().set("bild", produkt.getBild()))
+                .first();
         return produkt;
     }
 }

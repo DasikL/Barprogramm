@@ -58,7 +58,7 @@ public class ProduktController {
         return new ResponseEntity<String>(produktService.changeBild(produktId, pfad), HttpStatus.OK);
     }
 
-    @PutMapping("/change/")
+    @PutMapping("/change")
     public ResponseEntity<Produkt> changeProdukt(@RequestBody Produkt produkt) {
         return new ResponseEntity<Produkt>(produktService.changeProdukt(produkt), HttpStatus.OK);
     }

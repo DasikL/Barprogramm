@@ -22,6 +22,11 @@ public class BardienstController {
         return new ResponseEntity<List<Bardienst>>(bardienstService.getAlleBardienste(), HttpStatus.OK);
     }
 
+    @GetMapping("/month")
+    public ResponseEntity<List<Bardienst>> getLastMonth(@RequestParam Integer[] dateArray) {
+        return new ResponseEntity<List<Bardienst>>(bardienstService.getSpecificMonth(dateArray), HttpStatus.OK);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<Bardienst> createBardienst(@RequestBody Bardienst bardienst) {
         return new ResponseEntity<Bardienst>(bardienstService.createBardienst(bardienst), HttpStatus.CREATED);

@@ -54,6 +54,7 @@ function Login() {
         zimmer: znummer,
         datum: date.toISOString().split("T")[0],
         uhrzeit: date.toISOString().split("T")[1].split(".")[0],
+        geld: [],
         anfangsbestand: {},
         endbestand: {},
       }));

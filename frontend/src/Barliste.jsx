@@ -44,6 +44,7 @@ function Barliste(props) {
       ...prev,
       anfangsbestand: {},
       endbestand: {},
+      geld: [],
       kommentar: "",
       name: "",
       zimmer: "",
@@ -88,11 +89,6 @@ function Barliste(props) {
       ...prev,
       [item.produktId]: e.target.value,
     }));
-    setAnfangsbestang((prev) => ({
-      ...prev,
-      [item.produktId]: e.target.value,
-    }));
-
     bardienst[1]((prev) => ({
       ...prev,
       anfangsbestand: anfangsbestand,
@@ -107,25 +103,39 @@ function Barliste(props) {
     bardienst[1]((prev) => ({ ...prev, endbestand: endbestand }));
   }
 
+  function geldChange(e, index) {
+    let geld = bardienst[0].geld;
+    geld[index] = e.target.value;
+    bardienst[1]((prev) => ({ ...prev, geld: geld }));
+    console.log(bardienst[0].geld);
+  }
+
   return (
     <div>
       <h2>Barliste</h2>
+      <div>
+        <p>Geld:</p>
+        <p>Anfangsbestand:</p>
+        <input type="number" step="0.01" onChange={(e) => geldChange(e, 0)}/>
+        <p>Endbestand:</p>
+        <input type="number" step="0.01" onChange={(e) => geldChange(e, 1)}/>
+      </div>
       {props.props.map((item, index) => {
         return (
           <div key={index}>
-            <img src={"src/assets/" + item.name + ".jpg"} alt={item.name} />
+            <img src={item.bild} alt={item.name} />
             <h3>{item.name}</h3>
             <p>Preis: {item.preis} €</p>
             <p>Anfangsbestand:</p>
             <input
               type="number"
-              value={anfangsbestand[item.produktId]}
+              defaultValue={anfangsbestand[item.produktId]}
               onChange={(e) => anfangsbestandChange(e, item)}
             />
             <p>Endbestand:</p>
             <input
               type="number"
-              value={endbestand[item.produktId]}
+              defaultValue={endbestand[item.produktId]}
               onChange={(e) => endbestandChange(e, item)}
             />
           </div>
@@ -136,3 +146,5 @@ function Barliste(props) {
   );
 }
 export default Barliste;
+
+

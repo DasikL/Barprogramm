@@ -49,4 +49,8 @@ public class Produkt {
     public Boolean isAktiv() {
         return aktiv;
     }
+
+    public String getBild() {
+        return bild;
+    }
 }
