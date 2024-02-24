@@ -6,6 +6,10 @@ function Barliste(props) {
   let bardienst = useContext(UserContext);
   const navigate = useNavigate();
 
+  //TODO: Bargeldbestand aus der Datenbank lesen um zu vergleichen.
+  //TODO: Soll-Endbestand berechnen und Differenz anzeigen und in Datenbank speichern.
+  //Alert bei Pfandflaschen ausschalten
+
   const [anfangsbestand, setAnfangsbestang] = useState(() => {
     if (localStorage.getItem("bardienst")) {
       return JSON.parse(localStorage.getItem("bardienst")).anfangsbestand;

@@ -25,12 +25,17 @@ function ProduktSeite() {
   }
 
   function hinzufügen(e) {
-    if(neuesBild === "" || e.target[0].value === "" || e.target[1].value === "" || e.target[2].value === ""){
+    if (
+      neuesBild === "" ||
+      e.target[0].value === "" ||
+      e.target[1].value === "" ||
+      e.target[2].value === ""
+    ) {
       alert("Bitte füllen Sie alle Felder aus!");
       e.preventDefault();
       return;
     }
-    
+
     fetch("http://localhost:8080/api/v1/produkt/create", {
       method: "POST",
       headers: {
@@ -157,7 +162,7 @@ function ProduktSeite() {
           <h3>Aktiv:</h3>
           <input type="checkbox" />
           <h3>Bild:</h3>
-          <input type="file" onChange={(e) => bild2(e)}/>
+          <input type="file" onChange={(e) => bild2(e)} />
           <button>Hinzufügen</button>
         </form>
       </div>

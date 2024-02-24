@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ObkContext } from "./App"; 
 import ProduktSeite from "./ProduktSeite";
 import BenutzerSeite from "./BenutzerSeite";
+import BardienstSeite from "./BardienstSeite";
 
 
 function ObkSeite() {
@@ -25,7 +26,7 @@ function ObkSeite() {
     <div>
       <h1>ObkSeite</h1>
     <button onClick={() => abmelden()}>Abmelden</button>
-    <BenutzerSeite />
+    <BardienstSeite />
     {// Benutzerseiten mit Bardiensten und Gewinn und Verlust
     // Seite um Nachfrage zu prognostizieren, sowie aufgrund der Prognose eine Bestellung vorgeschlagen bekommt
     }

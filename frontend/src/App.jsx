@@ -23,8 +23,6 @@ function App() {
     Zurück-Button deaktivieren
     Bei Reload nicht ausloggen
     Kommentarfeld
-    
-    
     */
 
   const [bardienst, setBardienst] = useState(() => {

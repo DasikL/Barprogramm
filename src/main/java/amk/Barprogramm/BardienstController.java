@@ -23,8 +23,8 @@ public class BardienstController {
     }
 
     @GetMapping("/month")
-    public ResponseEntity<List<Bardienst>> getLastMonth(@RequestParam Integer[] dateArray) {
-        return new ResponseEntity<List<Bardienst>>(bardienstService.getSpecificMonth(dateArray), HttpStatus.OK);
+    public ResponseEntity<List<Bardienst>> getLastMonth(@RequestParam Integer month, @RequestParam Integer year) {
+        return new ResponseEntity<List<Bardienst>>(bardienstService.getSpecificMonth(month, year), HttpStatus.OK);
     }
 
     @PostMapping("/create")

@@ -54,11 +54,9 @@ public class BardienstService {
         return Optional.ofNullable(b.getBardienste());
     }
 
-    public List<Bardienst> getSpecificMonth(Integer[] dateArray) {
+    public List<Bardienst> getSpecificMonth(Integer month, Integer year) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         List<Bardienst> bardienste = new ArrayList<>();
-        int month = dateArray[1];
-        int year = dateArray[0];
         for (Bardienst b : bardienstRepository.findAll()) {
             String[] bardienstDate = b.getDatum().split("-");
             int bardienstMonth = parseInt(bardienstDate[1]);
