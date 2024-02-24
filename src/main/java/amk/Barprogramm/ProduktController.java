@@ -58,6 +58,11 @@ public class ProduktController {
         return new ResponseEntity<String>(produktService.changeBild(produktId, pfad), HttpStatus.OK);
     }
 
+    @GetMapping("/{produktId}")
+    public ResponseEntity<Produkt> getProduktById(@PathVariable int produktId) {
+        return new ResponseEntity<Produkt>(produktService.getProduktById(produktId), HttpStatus.OK);
+    }
+
     @PutMapping("/change")
     public ResponseEntity<Produkt> changeProdukt(@RequestBody Produkt produkt) {
         return new ResponseEntity<Produkt>(produktService.changeProdukt(produkt), HttpStatus.OK);

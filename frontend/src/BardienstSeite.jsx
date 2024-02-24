@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 
 function BardiensSeite() {
-  const [params, setParams] = useState({ month: 2, year: 2024 });
+  const [params, setParams] = useState({ month: (new Date().getMonth() + 1), year: (new Date().getFullYear())});
   const [bardienste, setBardienste] = useState([]);
+  const [produkte, setProdukte] = useState([]);
 
   useEffect(() => {
     let url = new URL("http://localhost:8080/api/v1/bardienst/month");
@@ -10,16 +11,24 @@ function BardiensSeite() {
     fetch(url, { Method: "GET" })
       .then((response) => response.json())
       .then((data) => setBardienste(data));
+
+    fetch("http://localhost:8080/api/v1/produkt", { Method: "GET" })
+      .then((response) => response.json())
+      .then((data) => setProdukte(data));
   }, [params]);
 
+  //There is probably a bug where when you have some bardienste, where you have different products at different places, it will not render correctly
   function renderBestandWerte(item) {
     let bestand = [];
-    for (const [key] of Object.entries(item.anfangsbestand)) {
+    for (const [key] of Object.entries(produkte)) {
+      let produkt = produkte[key];
+      let bestandAnfang = item.anfangsbestand[produkt.produktId];
+      let bestandEnde = item.endbestand[produkt.produktId];
       bestand.push(
         <>
-          <td>{item.anfangsbestand[key]}</td>
-          <td>{item.endbestand[key]}</td>
-        </>
+          <td>{bestandAnfang}</td>
+          <td>{bestandEnde}</td>
+        </>,
       );
     }
     return bestand;
@@ -27,31 +36,66 @@ function BardiensSeite() {
 
   function renderBestandHeader() {
     let header = [];
-    if (bardienste.length === 0) {
-      return header;
-    }
-    for (const [key] of Object.entries(bardienste[0].anfangsbestand)) {
+    for (const [key] of Object.entries(produkte)) {
       header.push(
         <>
-          <th>{key}</th>
-          <th>{key}</th>
-        </>
+          <th colSpan="2">{produkte[key].name}</th>
+        </>,
       );
     }
     return header;
   }
 
+  function handleSearch(e) {
+    e.preventDefault();
+    let month = e.target[0].value;
+    let year = month.split("-")[0];
+    month = month.split("-")[1];
+    setParams({ month: month, year: year });
+  }
+
+  function getCurrentMonth() {
+    let date = new Date();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    return year + "-" + month;
+  }
+
+
   return (
     <div>
       <h1>Bardienst</h1>
+      <form onSubmit={(e) => handleSearch(e)}>
+      <input type="month" defaultValue={getCurrentMonth()} id="month"/>
+      <button type="submit">Suchen</button>
+      </form>
       <table>
         <thead>
           <tr>
-            <th>Tag</th>
+            <th>Datum</th>
             <th>Uhrzeit</th>
             <th>Name</th>
             <th>Zimmer</th>
+            <th colSpan="2">Geld</th>
             {renderBestandHeader()}
+          </tr>
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>Anfangsbestand</th>
+            <th>Endbestand</th>
+            {produkte.length !== 0 ? (
+              produkte.map(() => (
+                <>
+                  <th>Anfangsbestand</th>
+                  <th>Endbestand</th>
+                </>
+              ))
+            ) : (
+              <></>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -61,12 +105,13 @@ function BardiensSeite() {
               <td>{item.uhrzeit}</td>
               <td>{item.name}</td>
               <td>{item.zimmer}</td>
+              <td>{item.geld[0] + "€"}</td>
+              <td>{item.geld[1] + "€"}</td>
               {renderBestandWerte(item)}
             </tr>
           ))}
         </tbody>
       </table>
-      <button onClick={() => console.log(bardienste)}>Log</button>
     </div>
   );
 }

@@ -96,4 +96,8 @@ public class ProduktService {
                 .first();
         return produkt;
     }
+
+    public Produkt getProduktById(int produktId) {
+        return produktRepository.findByProduktId(produktId);
+    }
 }
