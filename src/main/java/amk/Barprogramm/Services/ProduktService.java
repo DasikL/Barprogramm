@@ -1,16 +1,13 @@
-package amk.Barprogramm;
+package amk.Barprogramm.Services;
 
-import org.bson.BsonBinarySubType;
-import org.bson.types.Binary;
+import amk.Barprogramm.Documents.Produkt;
+import amk.Barprogramm.Repositories.ProduktRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

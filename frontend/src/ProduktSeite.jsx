@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 
 function ProduktSeite() {
+
+  //Produktänderungen als Bardienst abspeichern? oder Bargeld als eingene Datei speichern?
+
   const [produkte, setProdukte] = useState([]);
   const [neuesBild, setBild] = useState("");
 

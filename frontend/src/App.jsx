@@ -37,6 +37,7 @@ function App() {
         uhrzeit: "",
         kommentar: "",
         geld: [],
+        differenz: 0,
         anfangsbestand: {},
         endbestand: {},
       };

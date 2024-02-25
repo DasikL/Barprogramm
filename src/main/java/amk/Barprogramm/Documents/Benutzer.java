@@ -1,5 +1,6 @@
-package amk.Barprogramm;
+package amk.Barprogramm.Documents;
 
+import amk.Barprogramm.Documents.Bardienst;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

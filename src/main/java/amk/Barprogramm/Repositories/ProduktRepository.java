@@ -1,11 +1,11 @@
-package amk.Barprogramm;
+package amk.Barprogramm.Repositories;
 
+import amk.Barprogramm.Documents.Produkt;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ProduktRepository extends MongoRepository<Produkt, ObjectId> {

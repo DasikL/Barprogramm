@@ -1,4 +1,4 @@
-package amk.Barprogramm;
+package amk.Barprogramm.Services;
 
 import org.springframework.stereotype.Service;
 

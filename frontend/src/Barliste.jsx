@@ -1,15 +1,21 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import { UserContext, LogInContext } from "./App";
 
 function Barliste(props) {
   let bardienst = useContext(UserContext);
   const navigate = useNavigate();
+  let euro = Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
+  });
 
   //TODO: Bargeldbestand aus der Datenbank lesen um zu vergleichen.
   //TODO: Soll-Endbestand berechnen und Differenz anzeigen und in Datenbank speichern.
   //Alert bei Pfandflaschen ausschalten
 
+  const [differenz, setDifferenz] = useState(0);
   const [anfangsbestand, setAnfangsbestang] = useState(() => {
     if (localStorage.getItem("bardienst")) {
       return JSON.parse(localStorage.getItem("bardienst")).anfangsbestand;
@@ -31,6 +37,28 @@ function Barliste(props) {
     }
   }, []);
 
+  useEffect(() => {
+    let result = 0;
+    Object.keys(anfangsbestand).forEach((key) => {
+      const anfang = parseFloat(anfangsbestand[key]);
+      const end = parseFloat(endbestand[key]);
+      let diff = anfang - end;
+      if (props.props.length > 0) {
+        let item = props.props.find((item) => item.produktId == key);
+        diff *= item.preis;
+      }
+      result += diff;
+    });
+    let AnfangsGeld = parseFloat(bardienst[0].geld[0]);
+    let EndGeld = parseFloat(bardienst[0].geld[1]);
+    result += Math.round((EndGeld - AnfangsGeld) * 100) / 100;
+    setDifferenz(result);
+  }, [anfangsbestand, endbestand, bardienst]);
+
+  useEffect(() => {
+    bardienst[1]((prev) => ({ ...prev, differenz: differenz }));
+  }, [differenz]);
+
   const upload = (e) => {
     if (checkInput() === false) {
       e.preventDefault();
@@ -49,6 +77,7 @@ function Barliste(props) {
       anfangsbestand: {},
       endbestand: {},
       geld: [],
+      differenz: 0,
       kommentar: "",
       name: "",
       zimmer: "",
@@ -111,7 +140,6 @@ function Barliste(props) {
     let geld = bardienst[0].geld;
     geld[index] = e.target.value;
     bardienst[1]((prev) => ({ ...prev, geld: geld }));
-    console.log(bardienst[0].geld);
   }
 
   return (
@@ -120,16 +148,26 @@ function Barliste(props) {
       <div>
         <p>Geld:</p>
         <p>Anfangsbestand:</p>
-        <input type="number" step="0.01" onChange={(e) => geldChange(e, 0)}/>
+        <input
+          type="number"
+          step="0.01"
+          onChange={(e) => geldChange(e, 0)}
+          defaultValue={bardienst[0].geld[0]}
+        />
         <p>Endbestand:</p>
-        <input type="number" step="0.01" onChange={(e) => geldChange(e, 1)}/>
+        <input
+          type="number"
+          step="0.01"
+          onChange={(e) => geldChange(e, 1)}
+          defaultValue={bardienst[0].geld[1]}
+        />
       </div>
       {props.props.map((item, index) => {
         return (
           <div key={index}>
             <img src={item.bild} alt={item.name} />
             <h3>{item.name}</h3>
-            <p>Preis: {item.preis} €</p>
+            <p>Preis: {euro.format(item.preis)}</p>
             <p>Anfangsbestand:</p>
             <input
               type="number"
@@ -145,10 +183,13 @@ function Barliste(props) {
           </div>
         );
       })}
+      <h3>Differenz: {euro.format(differenz)}</h3>
       <button onClick={(e) => upload(e)}>Bardienst beenden</button>
     </div>
   );
 }
 export default Barliste;
 
-
+Barliste.propTypes = {
+  props: PropTypes.array,
+};

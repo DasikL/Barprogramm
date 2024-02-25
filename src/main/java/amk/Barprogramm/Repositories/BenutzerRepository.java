@@ -1,5 +1,6 @@
-package amk.Barprogramm;
+package amk.Barprogramm.Repositories;
 
+import amk.Barprogramm.Documents.Benutzer;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

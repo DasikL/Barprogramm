@@ -1,5 +1,7 @@
-package amk.Barprogramm;
+package amk.Barprogramm.Controller;
 
+import amk.Barprogramm.Documents.Bardienst;
+import amk.Barprogramm.Services.BardienstService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

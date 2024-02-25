@@ -1,4 +1,4 @@
-package amk.Barprogramm;
+package amk.Barprogramm.Documents;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +23,7 @@ public class Bardienst {
     private String uhrzeit;
     private String kommentar;
     private Double[] geld;
+    private Double differenz;
     private Map<String, Integer> anfangsbestand;
     private Map<String, Integer> endbestand;
 

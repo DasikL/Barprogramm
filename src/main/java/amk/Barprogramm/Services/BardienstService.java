@@ -1,5 +1,10 @@
-package amk.Barprogramm;
+package amk.Barprogramm.Services;
 
+import amk.Barprogramm.Documents.Bardienst;
+import amk.Barprogramm.Documents.Benutzer;
+import amk.Barprogramm.Documents.Produkt;
+import amk.Barprogramm.Repositories.BardienstRepository;
+import amk.Barprogramm.Repositories.BenutzerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -7,9 +12,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 

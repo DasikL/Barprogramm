@@ -1,10 +1,10 @@
-package amk.Barprogramm;
+package amk.Barprogramm.Services;
 
+import amk.Barprogramm.Documents.Benutzer;
+import amk.Barprogramm.Repositories.BenutzerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class BenutzerService {

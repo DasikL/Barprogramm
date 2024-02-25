@@ -26,6 +26,8 @@ function ObkSeite() {
     <div>
       <h1>ObkSeite</h1>
     <button onClick={() => abmelden()}>Abmelden</button>
+    {//<ProduktSeite />
+    }
     <BardienstSeite />
     {// Benutzerseiten mit Bardiensten und Gewinn und Verlust
     // Seite um Nachfrage zu prognostizieren, sowie aufgrund der Prognose eine Bestellung vorgeschlagen bekommt

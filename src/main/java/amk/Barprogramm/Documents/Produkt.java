@@ -1,4 +1,4 @@
-package amk.Barprogramm;
+package amk.Barprogramm.Documents;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
