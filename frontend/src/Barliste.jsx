@@ -1,10 +1,11 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import { UserContext, LogInContext } from "./App";
+import { BardienstContext, GeldContext } from "./App";
 
 function Barliste(props) {
-  let bardienst = useContext(UserContext);
+  let bardienst = useContext(BardienstContext);
+  let geldbestand = useContext(GeldContext);
   const navigate = useNavigate();
   let euro = Intl.NumberFormat("de-DE", {
     style: "currency",
@@ -138,6 +139,11 @@ function Barliste(props) {
 
   function geldChange(e, index) {
     let geld = bardienst[0].geld;
+    if(index === 0 && e.target.value !== geldbestand[0].toString()){
+      e.target.style.color = "red";
+    } else{
+      e.target.style.color = "black";
+    }
     geld[index] = e.target.value;
     bardienst[1]((prev) => ({ ...prev, geld: geld }));
   }

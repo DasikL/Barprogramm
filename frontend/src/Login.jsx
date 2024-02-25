@@ -1,9 +1,9 @@
 import { useContext, useState, useEffect } from "react";
-import { UserContext, LogInContext } from "./App";
+import { BardienstContext} from "./App";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const bardienst = useContext(UserContext);
+  const bardienst = useContext(BardienstContext);
   const navigate = useNavigate();
 
   const [name, setName] = useState("");

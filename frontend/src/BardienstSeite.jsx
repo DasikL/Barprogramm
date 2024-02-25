@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+//TODO: Maybe implement a way to get Bardienste from a single User
+
 function BardienstSeite() {
   const [params, setParams] = useState({
     month: new Date().getMonth() + 1,
@@ -25,7 +27,6 @@ function BardienstSeite() {
       .then((data) => setProdukte(data));
   }, [params]);
 
-  //There is probably a bug where when you have some bardienste, where you have different products at different places, it will not render correctly
   function renderBestandWerte(item) {
     let bestand = [];
 

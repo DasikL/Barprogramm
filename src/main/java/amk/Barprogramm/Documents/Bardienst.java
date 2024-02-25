@@ -49,4 +49,7 @@ public class Bardienst {
     public String getDatum() {
         return datum;
     }
+    public Double[] getGeld() {
+        return geld;
+    }
 }

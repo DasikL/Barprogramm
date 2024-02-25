@@ -2,9 +2,11 @@ package amk.Barprogramm.Services;
 
 import amk.Barprogramm.Documents.Bardienst;
 import amk.Barprogramm.Documents.Benutzer;
+import amk.Barprogramm.Documents.Geld;
 import amk.Barprogramm.Documents.Produkt;
 import amk.Barprogramm.Repositories.BardienstRepository;
 import amk.Barprogramm.Repositories.BenutzerRepository;
+import amk.Barprogramm.Repositories.GeldRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -26,6 +28,8 @@ public class BardienstService {
     @Autowired
     private BenutzerRepository benutzerRepository;
     @Autowired
+    private GeldRepository geldRepository;
+    @Autowired
     private MongoTemplate mongoTemplate;
 
     public List<Bardienst> getAlleBardienste() {
@@ -37,6 +41,10 @@ public class BardienstService {
         mongoTemplate.update(Benutzer.class)
                 .matching(Criteria.where("zimmer").is(bardienst.getZimmer()))
                 .apply(new Update().push("bardienste").value(bardienst))
+                .first();
+        mongoTemplate.update(Geld.class)
+                .matching(Criteria.where("id").is(geldRepository.findAll().get(0).getId()))
+                .apply(new Update().set("bestand", bardienst.getGeld()[1]))
                 .first();
 
 

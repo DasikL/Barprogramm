@@ -6,13 +6,15 @@ import Login from "./Login";
 import Header from "./Header";
 import ObkSeite from "./ObkSeite";
 
-const UserContext = createContext();
-const LogInContext = createContext();
+const BardienstContext = createContext();
+const GeldContext = createContext();
 const ObkContext = createContext();
 
 function App() {
 
   const [produkte, setProdukte] = useState([]);
+  const [geld, setGeld] = useState(0.0);
+    
 
   /*
     TODO:
@@ -61,6 +63,13 @@ function App() {
       .then((data) => {
         setProdukte(data);
       });
+
+    fetch("http://localhost:8080/api/v1/geld", {method: "GET"})
+      .then((response) => response.json())
+      .then((data) => {
+        setGeld(data);
+      });
+      
   }, [bardienst, loggedin]);
 
   useEffect(() => {
@@ -69,8 +78,8 @@ function App() {
   }, [bardienst, obk]);
 
   return (
-    <UserContext.Provider value={[bardienst, setBardienst]}>
-      <LogInContext.Provider value={[loggedin, setLoggedin]}>
+    <BardienstContext.Provider value={[bardienst, setBardienst]}>
+      <GeldContext.Provider value={[geld, setGeld]}>
         <ObkContext.Provider value={[obk, setObk]}>
           <Router>
             <Header />
@@ -81,10 +90,10 @@ function App() {
             </Routes>
           </Router>
         </ObkContext.Provider>
-      </LogInContext.Provider>
-    </UserContext.Provider>
+      </GeldContext.Provider>
+    </BardienstContext.Provider>
   );
 }
 
 export default App;
-export { UserContext, LogInContext, ObkContext };
+export { BardienstContext, GeldContext, ObkContext };

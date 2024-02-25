@@ -15,7 +15,7 @@ public class GeldController {
     @Autowired
     private GeldService geldService;
 
-    @PostMapping
+    @PutMapping
     public ResponseEntity<Double> setGeld(@RequestBody Double geld) {
         return new ResponseEntity<Double>(geldService.setGeld(geld), org.springframework.http.HttpStatus.OK);
     }

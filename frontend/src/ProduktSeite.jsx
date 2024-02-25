@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 
 function ProduktSeite() {
-
-  //Produktänderungen als Bardienst abspeichern? oder Bargeld als eingene Datei speichern?
-
   const [produkte, setProdukte] = useState([]);
   const [neuesBild, setBild] = useState("");
+  const [geld, setGeld] = useState();
 
   useEffect(() => {
     fetch("http://localhost:8080/api/v1/produkt")
       .then((response) => response.json())
       .then((data) => setProdukte(data));
+    fetch("http://localhost:8080/api/v1/geld", { method: "GET" })
+      .then((response) => response.json())
+      .then((data) => {
+        setGeld(data);
+      });
   }, []);
 
   function ändern(e) {
@@ -22,6 +25,13 @@ function ProduktSeite() {
         },
         body: JSON.stringify(produkt),
       });
+    });
+    fetch("http://localhost:8080/api/v1/geld", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(geld),
     });
     alert("Änderungen gespeichert");
     e.preventDefault();
@@ -113,6 +123,14 @@ function ProduktSeite() {
       <div>
         <h1>Produkte ändern</h1>
         <form onSubmit={(e) => ändern(e)}>
+          <h2>Geld</h2>
+          <input
+            type="number"
+            id="geld"
+            defaultValue={geld}
+            step="0.01"
+            onChange={(e) => setGeld(e.target.value)}
+          />
           {produkte.map((produkt) => (
             <div key={produkt.produktId}>
               <h2>{produkt.name}</h2>
