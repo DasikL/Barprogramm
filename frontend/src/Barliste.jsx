@@ -12,9 +12,6 @@ function Barliste(props) {
     currency: "EUR",
   });
 
-  //TODO: Bargeldbestand aus der Datenbank lesen um zu vergleichen.
-  //TODO: Soll-Endbestand berechnen und Differenz anzeigen und in Datenbank speichern.
-  //Alert bei Pfandflaschen ausschalten
 
   const [differenz, setDifferenz] = useState(0);
   const [anfangsbestand, setAnfangsbestang] = useState(() => {
@@ -43,7 +40,7 @@ function Barliste(props) {
     Object.keys(anfangsbestand).forEach((key) => {
       const anfang = parseFloat(anfangsbestand[key]);
       const end = parseFloat(endbestand[key]);
-      let diff = anfang - end;
+      let diff = end-anfang;
       if (props.props.length > 0) {
         let item = props.props.find((item) => item.produktId == key);
         diff *= item.preis;
