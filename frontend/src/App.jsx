@@ -81,7 +81,6 @@ function App() {
   }, [bardienst, obk]);
 
   return (
-    <div className="App">
     <BardienstContext.Provider value={[bardienst, setBardienst]}>
       <GeldContext.Provider value={[geld, setGeld]}>
         <ObkContext.Provider value={[obk, setObk]}>
@@ -96,7 +95,6 @@ function App() {
         </ObkContext.Provider>
       </GeldContext.Provider>
     </BardienstContext.Provider>
-    </div>
   );
 }
 

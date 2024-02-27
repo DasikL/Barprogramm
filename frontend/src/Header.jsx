@@ -18,74 +18,152 @@ function Header() {
     return data;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
+    e.preventDefault();
     if (password === "") {
       alert("Bitte geben Sie das Passwort ein!");
-      e.preventDefault();
       return;
     }
-    const isObk = checkOBK();
+    const isObk = await checkOBK();
 
     if (isObk) {
       obk[1](true);
-      navigate("/obk");
+      navigate("/obk/produkt");
     }
-    e.preventDefault();
+    e.target.reset();
   }
 
-  return (
-    <>
-      <div className="navbar navbar-expand-lg bg-body-tertiary">
-        <div className="container-fluid">
-          <a href="/" className="navbar-brand">
-            Barprogramm
-          </a>
-          <button
-            type="button"
-            className="btn btn-primary"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasRight"
-          >
-            OBK
-          </button>
+  if (obk[0]) {
+    return (
+      <>
+        <div className="navbar navbar-expand-lg bg-body-tertiary">
+          <div className="container-fluid">
+            <a href="/" className="navbar-brand">
+              Barprogramm
+            </a>
+            <button
+              type="button"
+              className="btn btn-primary"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasRight"
+            >
+              Menu
+            </button>
+          </div>
         </div>
-      </div>
-      <div
-        className="offcanvas offcanvas-end"
-        tabIndex="-1"
-        id="offcanvasRight"
-        aria-labelledby="offcanvasRightLabel"
-      >
-        <div className="offcanvas-header">
-          <h5 id="offcanvasRightLabel">OBK Login</h5>
-          <button
-            type="button"
-            className="btn-close text-reset"
-            data-bs-dismiss="offcanvas"
-            aria-label="Close"
-          ></button>
+
+        <div
+          className="offcanvas offcanvas-end"
+          tabIndex="-1"
+          id="offcanvasRight"
+          aria-labelledby="offcanvasRightLabel"
+        >
+          <div className="offcanvas-header">
+            <h5 id="offcanvasRightLabel">OBK</h5>
+            <button
+              type="button"
+              className="btn-close text-reset"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div className="offcanvas-body">
+            <ul className="nav flex-column nav-pills nav-fill">
+              <li className="nav-item"> 
+                <button className="nav-link active" aria-current="page" data-bs-toggle="pill" onClick={() => navigate("/obk/produkt")}>
+                  Produkte
+                </button>
+              </li>
+              <li className="nav-item">
+                <button className="nav-link" aria-current="page" data-bs-toggle="pill" onClick={() => navigate("/obk/benutzer")}>
+                  Benutzer
+                </button>
+              </li>
+              <li className="nav-item">
+                <button className="nav-link" aria-current="page" data-bs-toggle="pill" onClick={() => navigate("/obk/bardienst")}>
+                  Bardienste
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div className="offcanvas-footer">
+            <button
+              type="button"
+              className="btn btn-danger w-100 justify-content-center m-0" 
+              data-bs-toggle="offcanvas"
+              style={{borderRadius: "0px"}}
+              onClick={() => {
+                obk[1](false);
+                navigate("/");
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </div>
-        <div className="offcanvas-body">
-          <form onSubmit={(e) => handleSubmit(e)} className="">
-            <h3 className="text-center">OBK Login</h3>
-            <div className="my-3">
-              <label htmlFor="password" className="form-label">
-                Passwort
-              </label>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <div className="navbar navbar-expand-lg bg-body-tertiary">
+          <div className="container-fluid">
+            <a href="/" className="navbar-brand">
+              Barprogramm
+            </a>
+            <button
+              type="button"
+              className="btn btn-primary"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasRight"
+            >
+              OBK
+            </button>
+          </div>
+        </div>
+        <div
+          className="offcanvas offcanvas-end"
+          tabIndex="-1"
+          id="offcanvasRight"
+          aria-labelledby="offcanvasRightLabel"
+        >
+          <div className="offcanvas-header">
+            <h5 id="offcanvasRightLabel">OBK</h5>
+            <button
+              type="button"
+              className="btn-close text-reset"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div className="offcanvas-body">
+            <form onSubmit={(e) => handleSubmit(e)} className="">
+              <h3 className="text-center">OBK Login</h3>
+              <div className="my-3">
+                <label htmlFor="password" className="form-label">
+                  Passwort
+                </label>
+                <input
+                  className="form-control"
+                  type="password"
+                  id="password"
+                  placeholder="Passwort"
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
               <input
-                className="form-control"
-                type="password"
-                id="password"
-                placeholder="Passwort"
-                onChange={(e) => setPassword(e.target.value)}
+                type="submit"
+                value="Login"
+                className="btn btn-primary w-100 justify-content-center m-0"
+                data-bs-toggle="offcanvas"
+                data-bs-dismiss
               />
-            </div>
-            <input type="submit" value="Login" className="btn btn-primary" data-bs-dissmiss="offcanvas"/>
-          </form>
+            </form>
+          </div>
         </div>
-      </div>
-    </>
-  );
+      </>
+    );
+  }
 }
 
 export default Header;
