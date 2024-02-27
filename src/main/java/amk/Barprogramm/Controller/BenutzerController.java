@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -30,5 +29,15 @@ public class BenutzerController {
     @GetMapping
     public ResponseEntity<List<Benutzer>> getAlleBenutzer() {
         return new ResponseEntity<List<Benutzer>>(benutzerService.getAlleBenutzer(), HttpStatus.OK);
+    }
+
+    @PutMapping("/update/{zimmer}/{name}/{alteNummer}")
+    public ResponseEntity<Benutzer> updateBenutzer(@PathVariable String zimmer, @PathVariable String name, @PathVariable String alteNummer) {
+        return new ResponseEntity<Benutzer>(benutzerService.updateBenutzer(zimmer, name, alteNummer), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{zimmer}/{name}")
+    public ResponseEntity<Benutzer> deleteBenutzer(@PathVariable String zimmer, @PathVariable String name) {
+        return new ResponseEntity<Benutzer>(benutzerService.deleteBenutzer(zimmer, name), HttpStatus.OK);
     }
 }

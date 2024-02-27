@@ -145,6 +145,10 @@ function Barliste(props) {
     bardienst[1]((prev) => ({ ...prev, geld: geld }));
   }
 
+  function kommentarChange(e) {
+    bardienst[1]((prev) => ({ ...prev, kommentar: e.target.value }));
+  }
+
   return (
     <div>
       <h2>Barliste</h2>
@@ -187,6 +191,7 @@ function Barliste(props) {
         );
       })}
       <h3>Differenz: {euro.format(differenz)}</h3>
+      <input type="text" placeholder="Kommentar" onChange={(e) => kommentarChange(e)}/>
       <button onClick={(e) => upload(e)}>Bardienst beenden</button>
     </div>
   );

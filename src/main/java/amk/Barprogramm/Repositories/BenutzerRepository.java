@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface BenutzerRepository extends MongoRepository<Benutzer, ObjectId> {
     Optional<Benutzer> findByZimmer(String zimmer);
     Optional<Benutzer> findByZimmerAndName(String zimmer, String name);
+
+    Benutzer deleteByZimmerAndName(String zimmer, String name);
 }

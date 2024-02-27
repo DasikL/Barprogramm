@@ -1,5 +1,6 @@
 package amk.Barprogramm.Services;
 
+import amk.Barprogramm.Documents.Bardienst;
 import amk.Barprogramm.Documents.Benutzer;
 import amk.Barprogramm.Repositories.BenutzerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +39,21 @@ public class BenutzerService {
 
     public List<Benutzer> getAlleBenutzer() {
         return benutzerRepository.findAll();
+    }
+
+    public Benutzer deleteBenutzer(String zimmer, String name) {
+        Benutzer b = benutzerRepository.findByZimmerAndName(zimmer, name).get();
+        //delete all Bardienste of Benutzer
+        List<Bardienst> bardienste = b.getBardienste();
+        for(Bardienst bardienst : bardienste){
+            mongoTemplate.remove(bardienst);
+        }
+        return benutzerRepository.deleteByZimmerAndName(zimmer, name);
+    }
+
+    public Benutzer updateBenutzer(String zimmer, String name, String alteNummer) {
+        Benutzer b = benutzerRepository.findByZimmerAndName(alteNummer, name).get();
+        b.setZimmer(zimmer);
+        return benutzerRepository.save(b);
     }
 }

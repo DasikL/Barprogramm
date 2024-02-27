@@ -1,10 +1,13 @@
 import { useState, useEffect, createContext } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import * as bootstrap from "bootstrap";
 
 import Barliste from "./Barliste";
 import Login from "./Login";
 import Header from "./Header";
 import ObkSeite from "./ObkSeite";
+
+import "./App.scss";
 
 const BardienstContext = createContext();
 const GeldContext = createContext();
@@ -78,13 +81,14 @@ function App() {
   }, [bardienst, obk]);
 
   return (
+    <div className="App">
     <BardienstContext.Provider value={[bardienst, setBardienst]}>
       <GeldContext.Provider value={[geld, setGeld]}>
         <ObkContext.Provider value={[obk, setObk]}>
           <Router>
             <Header />
             <Routes>
-              <Route path="/obk" element={<ObkSeite />} />
+              <Route path="/obk/*" element={<ObkSeite />} />
               <Route exact path="/" element={<Login />} />
               <Route path="/barliste" element={<Barliste props={produkte}/>} />
             </Routes>
@@ -92,6 +96,7 @@ function App() {
         </ObkContext.Provider>
       </GeldContext.Provider>
     </BardienstContext.Provider>
+    </div>
   );
 }
 

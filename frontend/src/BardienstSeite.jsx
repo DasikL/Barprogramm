@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 
-//TODO: Maybe implement a way to get Bardienste from a single User
-
 function BardienstSeite() {
   const [params, setParams] = useState({
     month: new Date().getMonth() + 1,
@@ -106,11 +104,13 @@ function BardienstSeite() {
             <th>Uhrzeit</th>
             <th>Name</th>
             <th>Zimmer</th>
+            <th>Kommentar</th>
             <th>Differenz</th>
             <th colSpan="2">Geld</th>
             {renderBestandHeader()}
           </tr>
           <tr>
+            <th></th>
             <th></th>
             <th></th>
             <th></th>
@@ -137,6 +137,7 @@ function BardienstSeite() {
               <td>{item.uhrzeit}</td>
               <td>{item.name}</td>
               <td>{item.zimmer}</td>
+              <td>{item.kommentar}</td>
               <td>{euro.format(item.differenz)}</td>
               <td>{euro.format(item.geld[0])}</td>
               <td>{euro.format(item.geld[1])}</td>

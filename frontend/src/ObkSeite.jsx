@@ -4,6 +4,7 @@ import { ObkContext } from "./App";
 import ProduktSeite from "./ProduktSeite";
 import BenutzerSeite from "./BenutzerSeite";
 import BardienstSeite from "./BardienstSeite";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function ObkSeite() {
   const navigate = useNavigate();
@@ -22,16 +23,15 @@ function ObkSeite() {
   return (
     <div>
       <h1>ObkSeite</h1>
+      <button onClick={() => navigate("produkt")}>Produkt</button>
+      <button onClick={() => navigate("benutzer")}>Benutzer</button>
+      <button onClick={() => navigate("bardienst")}>Bardienst</button>
       <button onClick={() => abmelden()}>Abmelden</button>
-      {
-        //<ProduktSeite />
-        //<BenutzerSeite />
-      }
-        <BardienstSeite />
-      {
-        // Benutzerseiten mit Bardiensten und Gewinn und Verlust
-        // Seite um Nachfrage zu prognostizieren, sowie aufgrund der Prognose eine Bestellung vorgeschlagen bekommt
-      }
+        <Routes>
+          <Route path="/produkt" element={<ProduktSeite />} />
+          <Route path="/benutzer" element={<BenutzerSeite />} />
+          <Route path="/bardienst" element={<BardienstSeite />} />
+        </Routes>
     </div>
   );
 }
