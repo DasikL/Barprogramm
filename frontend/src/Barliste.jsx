@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { BardienstContext, GeldContext } from "./App";
+import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function Barliste(props) {
   let bardienst = useContext(BardienstContext);
@@ -11,7 +12,6 @@ function Barliste(props) {
     style: "currency",
     currency: "EUR",
   });
-
 
   const [differenz, setDifferenz] = useState(0);
   const [anfangsbestand, setAnfangsbestang] = useState(() => {
@@ -28,6 +28,7 @@ function Barliste(props) {
       return {};
     }
   });
+  const [activeTabs, setActiveTabs] = useState({});
 
   useEffect(() => {
     if (!localStorage.getItem("loggedIn")) {
@@ -36,11 +37,25 @@ function Barliste(props) {
   }, []);
 
   useEffect(() => {
+    if (
+      props.props.length > 0 &&
+      activeTabs[props.props[0].produktId] === undefined
+    ) {
+      props.props.forEach((item) => {
+        setActiveTabs((prev) => ({
+          ...prev,
+          [item.produktId]: item.produktId + "Produkt",
+        }));
+      });
+    }
+  }, [props.props]);
+
+  useEffect(() => {
     let result = 0;
     Object.keys(anfangsbestand).forEach((key) => {
       const anfang = parseFloat(anfangsbestand[key]);
       const end = parseFloat(endbestand[key]);
-      let diff = end-anfang;
+      let diff = end - anfang;
       if (props.props.length > 0) {
         let item = props.props.find((item) => item.produktId == key);
         diff *= item.preis;
@@ -111,6 +126,9 @@ function Barliste(props) {
   }
 
   function anfangsbestandChange(e, item) {
+    let bestand = anfangsbestand;
+    bestand[item.produktId] = e.target.value;
+
     if (e.target.value === item.bestand.toString()) {
       e.target.style.color = "black";
     } else {
@@ -122,23 +140,27 @@ function Barliste(props) {
     }));
     bardienst[1]((prev) => ({
       ...prev,
-      anfangsbestand: anfangsbestand,
+      anfangsbestand: bestand,
     }));
   }
 
   function endbestandChange(e, item) {
+    //Bestand muss hier nochmal gespeichert werden, da sonst die Vorherigen Werte in Bardienst gespeichert werden
+    let bestand = endbestand;
+    bestand[item.produktId] = e.target.value;
+
     setEndbestand((prev) => ({
       ...prev,
       [item.produktId]: e.target.value,
     }));
-    bardienst[1]((prev) => ({ ...prev, endbestand: endbestand }));
+    bardienst[1]((prev) => ({ ...prev, endbestand: bestand }));
   }
 
   function geldChange(e, index) {
     let geld = bardienst[0].geld;
-    if(index === 0 && e.target.value !== geldbestand[0].toString()){
+    if (index === 0 && e.target.value !== geldbestand[0].toString()) {
       e.target.style.color = "red";
-    } else{
+    } else {
       e.target.style.color = "black";
     }
     geld[index] = e.target.value;
@@ -149,51 +171,314 @@ function Barliste(props) {
     bardienst[1]((prev) => ({ ...prev, kommentar: e.target.value }));
   }
 
-  return (
-    <div>
-      <h2>Barliste</h2>
-      <div>
-        <p>Geld:</p>
-        <p>Anfangsbestand:</p>
-        <input
-          type="number"
-          step="0.01"
-          onChange={(e) => geldChange(e, 0)}
-          defaultValue={bardienst[0].geld[0]}
-        />
-        <p>Endbestand:</p>
-        <input
-          type="number"
-          step="0.01"
-          onChange={(e) => geldChange(e, 1)}
-          defaultValue={bardienst[0].geld[1]}
-        />
-      </div>
-      {props.props.map((item, index) => {
-        return (
-          <div key={index}>
-            <img src={item.bild} alt={item.name} />
-            <h3>{item.name}</h3>
-            <p>Preis: {euro.format(item.preis)}</p>
-            <p>Anfangsbestand:</p>
-            <input
-              type="number"
-              defaultValue={anfangsbestand[item.produktId]}
-              onChange={(e) => anfangsbestandChange(e, item)}
-            />
-            <p>Endbestand:</p>
-            <input
-              type="number"
-              defaultValue={endbestand[item.produktId]}
-              onChange={(e) => endbestandChange(e, item)}
-            />
+  function toggleTabs(bool) {
+    if (bool) {
+      props.props.forEach((item) => {
+        setActiveTabs((prev) => ({
+          ...prev,
+          [item.produktId]: item.produktId + "Produkt",
+        }));
+      });
+    } else {
+      props.props.forEach((item) => {
+        setActiveTabs((prev) => ({
+          ...prev,
+          [item.produktId]: item.produktId + "Bestand",
+        }));
+      });
+    }
+  }
+
+  function search(e) {
+    let input, filter, div, a, i, txtValue;
+    input = e.target.value;
+    filter = input.toUpperCase();
+    div = document.getElementById("produktcards");
+    div = div.getElementsByClassName("col-sm-6");
+    for (i = 0; i < div.length; i++) {
+      a = div[i].getElementsByClassName("card-title")[0];
+      txtValue = a.textContent || a.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        div[i].style.display = "";
+      } else {
+        div[i].style.display = "none";
+      }
+    }
+  }
+
+  function FertigModal() {
+    return (
+      <div
+        className="modal fade"
+        id="fertigModal"
+        tabIndex="-1"
+        aria-labelledby="fertigModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="fertigModalLabel">
+                Bardienst beenden
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <div className="form-check">
+                <input type="checkbox" className="form-check-input" />
+                <label htmlFor="checkbox1" className="form-check-label">
+                  Checkbox1
+                </label>
+              </div>
+              <div className="mb-3">
+                <label htmlFor="kommentar" className="form-label">
+                  Kommentar:
+                </label>
+                <input
+                  type="text"
+                  placeholder="Kommentar"
+                  className="form-control"
+                  id="kommentar"
+                  onChange={(e) => kommentarChange(e)}
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <h5 className="">Differenz: {euro.format(differenz)}</h5>
+              <button
+                type="button"
+                className="btn btn-success"
+                data-bs-dismiss="modal"
+                onClick={(e) => upload(e)}
+              >
+                Bardienst beenden
+              </button>
+            </div>
           </div>
-        );
-      })}
-      <h3>Differenz: {euro.format(differenz)}</h3>
-      <input type="text" placeholder="Kommentar" onChange={(e) => kommentarChange(e)}/>
-      <button onClick={(e) => upload(e)}>Bardienst beenden</button>
-    </div>
+        </div>
+      </div>
+    );
+  }
+
+  function activateFertigModal(e) {
+    e.preventDefault();
+    let myModal = new bootstrap.Modal(document.getElementById("fertigModal"), {
+      keyboard: false,
+    });
+    myModal.show();
+  }
+
+  return (
+    <>
+      <form onSubmit={(e) => activateFertigModal(e)}>
+        <div className="container">
+          <h2>Barliste</h2>
+          <div className="card">
+            <div className="card-body">
+              <h3 className="card-title">Geld</h3>
+              <div className="row">
+                <div className="col">
+                  <label htmlFor="geldanfangsbestand" className="form-label">
+                    Anfangsbestand:
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    id="geldanfangsbestand"
+                    className="form-control"
+                    onChange={(e) => geldChange(e, 0)}
+                    defaultValue={bardienst[0].geld[0]}
+                    required
+                  />
+                </div>
+                <div className="col">
+                  <label htmlFor="geldendbestand" className="form-label">
+                    Endbestand:
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    id="geldendbestand"
+                    className="form-control"
+                    onChange={(e) => geldChange(e, 1)}
+                    defaultValue={bardienst[0].geld[1]}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="d-flex gap-2 pt-5 pb-2">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Produkt suchen"
+              onChange={(e) => search(e)}
+            />
+            <button
+              className="btn btn-primary col-2"
+              onClick={() => toggleTabs(true)}
+              type="button"
+            >
+              Produkte anzeigen
+            </button>
+            <button
+              className="btn btn-primary col-2"
+              onClick={() => toggleTabs(false)}
+              type="button"
+            >
+              Bestände anzeigen
+            </button>
+          </div>
+
+          <div className="row row-cols-auto g-4" id="produktcards">
+            {props.props.map((item, index) => {
+              return (
+                <div
+                  className="col-md-4 col-sm-6 col-lg-3 mb-3 mb-sm-0"
+                  key={index}
+                >
+                  <div className="card">
+                    <div className="card-header">
+                      <ul className="nav nav-tabs card-header-tabs">
+                        <li className="nav-item">
+                          <button
+                            className={
+                              "nav-link" +
+                              (activeTabs[item.produktId] ===
+                              item.produktId + "Produkt"
+                                ? " active"
+                                : "")
+                            }
+                            onClick={() =>
+                              setActiveTabs((prev) => ({
+                                ...prev,
+                                [item.produktId]: item.produktId + "Produkt",
+                              }))
+                            }
+                            type="button"
+                          >
+                            Produkt
+                          </button>
+                        </li>
+                        <li className="nav-item">
+                          <button
+                            className={
+                              "nav-link" +
+                              (activeTabs[item.produktId] ===
+                              item.produktId + "Bestand"
+                                ? " active"
+                                : "")
+                            }
+                            onClick={() =>
+                              setActiveTabs((prev) => ({
+                                ...prev,
+                                [item.produktId]: item.produktId + "Bestand",
+                              }))
+                            }
+                            type="button"
+                          >
+                            Bestand
+                          </button>
+                        </li>
+                      </ul>
+                      <div className="card-body">
+                        <div className="tab-content">
+                          <div
+                            className={
+                              "tab-pane fade" +
+                              (activeTabs[item.produktId] ===
+                              item.produktId + "Produkt"
+                                ? " show active"
+                                : "")
+                            }
+                            id={item.produktId + "Produkt"}
+                          >
+                            <img
+                              src={item.bild}
+                              alt={item.name}
+                              className="card-img-top"
+                            />
+                            <h3 className="card-title">{item.name}</h3>
+                            <p className="card-text">
+                              Preis: {euro.format(item.preis)}
+                            </p>
+                          </div>
+                          <div
+                            className={
+                              "tab-pane fade" +
+                              (activeTabs[item.produktId] ===
+                              item.produktId + "Bestand"
+                                ? " show active"
+                                : "")
+                            }
+                            id={item.produktId + "Bestand"}
+                          >
+                            <h3 className="card-title">{item.name}</h3>
+                            <div className="mb-3">
+                              <label
+                                htmlFor={item.produktId + "a"}
+                                className="form-label"
+                              >
+                                Anfangsbestand:
+                              </label>
+                              <input
+                                type="number"
+                                className="form-control"
+                                id={item.produktId + "a"}
+                                defaultValue={anfangsbestand[item.produktId]}
+                                onChange={(e) => anfangsbestandChange(e, item)}
+                                required
+                              />
+                            </div>
+                            <div className="mb-3">
+                              <label
+                                htmlFor={item.produktId + "e"}
+                                className="form-label"
+                              >
+                                Endbestand:
+                              </label>
+                              <input
+                                type="number"
+                                className="form-control"
+                                id={item.produktId + "e"}
+                                defaultValue={endbestand[item.produktId]}
+                                onChange={(e) => endbestandChange(e, item)}
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div className="navbar navbar-light bg-light fixed-bottom">
+          <div className="container">
+            <div className="p-2">
+              <h3>Differenz: {differenz ? euro.format(differenz) : "0€"}</h3>
+            </div>
+            <div className="p-2">
+              <input
+                className="btn btn-primary btn-lg"
+                type="submit"
+                value="Bardienst beenden"
+              ></input>
+            </div>
+          </div>
+        </div>
+      </form>
+      <FertigModal />
+    </>
   );
 }
 export default Barliste;

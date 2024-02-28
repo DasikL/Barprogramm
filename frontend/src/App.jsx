@@ -85,7 +85,7 @@ function App() {
       <GeldContext.Provider value={[geld, setGeld]}>
         <ObkContext.Provider value={[obk, setObk]}>
           <Router>
-            <Header />
+            <Header/>
             <Routes>
               <Route path="/obk/*" element={<ObkSeite />} />
               <Route exact path="/" element={<Login />} />

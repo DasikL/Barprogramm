@@ -115,7 +115,8 @@ function Header() {
               type="button"
               className="btn btn-primary"
               data-bs-toggle="offcanvas"
-              data-bs-target="#offcanvasRight"
+              data-bs-backdrop="hidden"
+              data-bs-target="#offcanvasRight1"
             >
               OBK
             </button>
@@ -123,12 +124,12 @@ function Header() {
         </div>
         <div
           className="offcanvas offcanvas-end"
-          tabIndex="-1"
-          id="offcanvasRight"
-          aria-labelledby="offcanvasRightLabel"
+          tabIndex="-2"
+          id="offcanvasRight1"
+          aria-labelledby="offcanvasRightLabel1"
         >
           <div className="offcanvas-header">
-            <h5 id="offcanvasRightLabel">OBK</h5>
+            <h5 id="offcanvasRightLabel1">OBK</h5>
             <button
               type="button"
               className="btn-close text-reset"
@@ -156,7 +157,7 @@ function Header() {
                 value="Login"
                 className="btn btn-primary w-100 justify-content-center m-0"
                 data-bs-toggle="offcanvas"
-                data-bs-dismiss
+                data-bs-dismiss="offcanvas"
               />
             </form>
           </div>

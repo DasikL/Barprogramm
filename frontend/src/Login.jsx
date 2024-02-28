@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { BardienstContext } from "./App";
 import { useNavigate } from "react-router-dom";
-import { confirmAlert } from "react-confirm-alert";
+import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function Login() {
   const bardienst = useContext(BardienstContext);
@@ -10,7 +10,7 @@ function Login() {
   const [name, setName] = useState("");
   const [znummer, setZnummer] = useState("");
 
-  const Zimmer = [
+  const zimmer = [
     "001",
     "002",
     "003",
@@ -110,51 +110,7 @@ function Login() {
     }
   }, []);
 
-  async function checkBenutzer(zimmernummer) {
-    const response = await fetch(
-      "http://localhost:8080/api/v1/benutzer/check/" + zimmernummer + "/" + name,
-      { method: "GET" },
-    );
-    const data = await response.json();
-    return data;
-  }
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (name === "" || znummer === "") {
-      alert("Bitte füllen Sie alle Felder aus!");
-      return;
-    }
-    if (!Zimmer.includes(znummer)) {
-      alert("Bitte geben Sie eine gültige Zimmernummer ein!");
-      return;
-    }
-    const exists = await checkBenutzer(znummer);
-
-    if (exists) {
-      const date = new Date();
-      bardienst[1]((prev) => ({
-        name: name,
-        zimmer: znummer,
-        datum: date.toISOString().split("T")[0],
-        uhrzeit: date.toISOString().split("T")[1].split(".")[0],
-        geld: [],
-        anfangsbestand: {},
-        endbestand: {},
-      }));
-      localStorage.setItem("loggedIn", true);
-      navigate("/barliste");
-    }
-  }
-
-  function ersterBardienst() {
-    fetch("http://localhost:8080/api/v1/benutzer/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: name, zimmer: znummer }),
-    });
+  function bardienstBeginnen() {
     const date = new Date();
     bardienst[1]((prev) => ({
       name: name,
@@ -166,12 +122,57 @@ function Login() {
       endbestand: {},
     }));
     localStorage.setItem("loggedIn", true);
+  }
+
+  async function checkBenutzer(zimmernummer) {
+    const response = await fetch(
+      "http://localhost:8080/api/v1/benutzer/check/" +
+        zimmernummer +
+        "/" +
+        name,
+      { method: "GET" },
+    );
+    const data = await response.json();
+    return data;
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const zimmerinput = document.getElementById("znummer");
+    if (!zimmer.includes(znummer)) {
+      zimmerinput.setCustomValidity(
+        "Bitte geben Sie eine gültige Zimmernummer ein",
+      );
+      zimmerinput.reportValidity();
+      return;
+    }
+    const exists = await checkBenutzer(znummer);
+
+    if (exists) {
+      bardienstBeginnen();
+      navigate("/barliste");
+      return;
+    }
+    const modal = new bootstrap.Modal("#modal");
+    modal.show();
+  }
+
+  function ersterBardienst() {
+    fetch("http://localhost:8080/api/v1/benutzer/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: name, zimmer: znummer }),
+    });
+    bardienstBeginnen();
     navigate("/barliste");
   }
 
   async function umgezogen() {
     let alteNummer = prompt("Bitte geben Sie die alte Zimmernummer ein");
-    if (Zimmer.includes(alteNummer)) {
+    if (zimmer.includes(alteNummer)) {
       const exists = await checkBenutzer(alteNummer);
       if (exists) {
         fetch(
@@ -185,22 +186,20 @@ function Login() {
             method: "PUT",
           },
         );
-        const date = new Date();
-        bardienst[1]((prev) => ({
-          name: name,
-          zimmer: znummer,
-          datum: date.toISOString().split("T")[0],
-          uhrzeit: date.toISOString().split("T")[1].split(".")[0],
-          geld: [],
-          anfangsbestand: {},
-          endbestand: {},
-        }));
-        localStorage.setItem("loggedIn", true);
+        bardienstBeginnen();
         navigate("/barliste");
       }
     } else {
       alert("Bitte geben Sie eine gültige Zimmernummer ein!");
     }
+  }
+
+  function handleZnummerChange(e) {
+    // Reset custom validity because if the user entered an invalid zimmernummer and then a valid one, the custom validity would still be set
+    const zimmerinput = document.getElementById("znummer");
+    zimmerinput.setCustomValidity("");
+    zimmerinput.reportValidity();
+    setZnummer(e.target.value);
   }
 
   // Idee: Videoerklärung für den Benutzer beim ersten Bardienst
@@ -210,7 +209,7 @@ function Login() {
       <div className="container">
         <div className="position-absolute top-50 start-50 translate-middle">
           <h1 className="text-center">Login</h1>
-          <form onSubmit={(e) => handleSubmit(e)}>
+          <form onSubmit={(e) => handleSubmit(e)} className="needs-validation">
             <div className="row mb-3">
               <label htmlFor="name" className="form-label">
                 Name:
@@ -220,6 +219,7 @@ function Login() {
                 id="name"
                 className="form-control"
                 onChange={(e) => setName(e.target.value)}
+                required
               />
             </div>
             <div className="row mb-3">
@@ -230,7 +230,8 @@ function Login() {
                 type="number"
                 id="znummer"
                 className="form-control"
-                onChange={(e) => setZnummer(e.target.value)}
+                onChange={(e) => handleZnummerChange(e)}
+                required
               />
             </div>
             <div className="row mb-3">
@@ -238,8 +239,6 @@ function Login() {
                 type="submit"
                 value="Bardienst beginnen"
                 className="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#modal"
               />
             </div>
           </form>
