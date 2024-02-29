@@ -11,7 +11,6 @@ function BardienstSeite() {
     style: "currency",
     currency: "EUR",
   });
-  let vorherigeBestaende = undefined;
 
   useEffect(() => {
     let url = new URL("http://localhost:8080/api/v1/bardienst/month");
@@ -24,56 +23,6 @@ function BardienstSeite() {
       .then((response) => response.json())
       .then((data) => setProdukte(data));
   }, [params]);
-
-  function renderBestandWerte(item) {
-    let bestand = [];
-
-    for (const [key] of Object.entries(produkte)) {
-      let produkt = produkte[key];
-      let bestandAnfang = item.anfangsbestand[produkt.produktId];
-      let bestandEnde = item.endbestand[produkt.produktId];
-      if (vorherigeBestaende === undefined) {
-        bestand.push(
-          <>
-            <td>{bestandAnfang}</td>
-            <td>{bestandEnde}</td>
-          </>,
-        );
-      } else {
-        let vorherigerBestand = vorherigeBestaende[produkt.produktId];
-        let differenz = bestandAnfang - vorherigerBestand;
-        if (differenz !== 0) {
-          bestand.push(
-            <>
-              <td style={{ color: "red" }}>{bestandAnfang}</td>
-              <td>{bestandEnde}</td>
-            </>,
-          );
-        } else {
-          bestand.push(
-            <>
-              <td>{bestandAnfang}</td>
-              <td>{bestandEnde}</td>
-            </>,
-          );
-        }
-      }
-    }
-    vorherigeBestaende = item.endbestand;
-    return bestand;
-  }
-
-  function renderBestandHeader() {
-    let header = [];
-    for (const [key] of Object.entries(produkte)) {
-      header.push(
-        <>
-          <th colSpan="2">{produkte[key].name}</th>
-        </>,
-      );
-    }
-    return header;
-  }
 
   function handleSearch(e) {
     e.preventDefault();
@@ -90,62 +39,87 @@ function BardienstSeite() {
     return year + "-" + month;
   }
 
+  function downloadCSV() {
+    let csv =
+      "Datum,Uhrzeit,Name,Zimmer,Kommentar,Differenz,Geld Anfang,Geld Ende";
+    for (const [key] of Object.entries(produkte)) {
+      let produkt = produkte[key];
+      csv += `,${produkt.name} Anfang,${produkt.name} Ende`;
+    }
+    for (const [key] of Object.entries(bardienste)) {
+      let item = bardienste[key];
+      csv += `\n${item.datum},${item.uhrzeit},${item.name},${item.zimmer},${item.kommentar},${item.differenz},${item.geld[0]},${item.geld[1]}`;
+      for (const [key] of Object.entries(produkte)) {
+        let produkt = produkte[key];
+        if (item.anfangsbestand[produkt.produktId] === undefined) {
+          item.anfangsbestand[produkt.produktId] = 0;
+          item.endbestand[produkt.produktId] = 0;
+        }
+        csv += `,${item.anfangsbestand[produkt.produktId]},${item.endbestand[produkt.produktId]}`;
+      }
+    }
+    let hiddenElement = document.createElement("a");
+    hiddenElement.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
+    hiddenElement.target = "_blank";
+    hiddenElement.download = "bardienst.csv";
+    hiddenElement.click();
+  }
   return (
-    <div>
-      <h1>Bardienst</h1>
+    <div className="container">
+      <h1>Bardienste</h1>
       <form onSubmit={(e) => handleSearch(e)}>
-        <input type="month" defaultValue={getCurrentMonth()} id="month" />
-        <button type="submit">Suchen</button>
+        <div className="input-group mb-3">
+          <input
+            type="month"
+            className="form-control"
+            defaultValue={getCurrentMonth()}
+            id="month"
+          />
+          <button type="submit" className="btn btn-primary">
+            Suchen
+          </button>
+        </div>
       </form>
-      <table>
-        <thead>
-          <tr>
-            <th>Datum</th>
-            <th>Uhrzeit</th>
-            <th>Name</th>
-            <th>Zimmer</th>
-            <th>Kommentar</th>
-            <th>Differenz</th>
-            <th colSpan="2">Geld</th>
-            {renderBestandHeader()}
-          </tr>
-          <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th>Anfangsbestand</th>
-            <th>Endbestand</th>
-            {produkte.length !== 0 ? (
-              produkte.map(() => (
-                <>
-                  <th>Anfangsbestand</th>
-                  <th>Endbestand</th>
-                </>
-              ))
-            ) : (
-              <></>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {bardienste.map((item) => (
-            <tr key={item.id.timestamp}>
-              <td>{item.datum}</td>
-              <td>{item.uhrzeit}</td>
-              <td>{item.name}</td>
-              <td>{item.zimmer}</td>
-              <td>{item.kommentar}</td>
-              <td>{euro.format(item.differenz)}</td>
-              <td>{euro.format(item.geld[0])}</td>
-              <td>{euro.format(item.geld[1])}</td>
-              {renderBestandWerte(item)}
+      <div>
+        <table className="table table-sm table-bordered">
+          <thead className="text-truncate">
+            <tr>
+              <th>Datum</th>
+              <th>Uhrzeit</th>
+              <th>Name</th>
+              <th>Zimmer</th>
+              <th>Kommentar</th>
+              <th>Differenz</th>
+              <th colSpan={2}>Geld</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th>Anfang</th>
+              <th>Ende</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bardienste.map((item) => (
+              <tr key={item.id.timestamp}>
+                <td>{item.datum}</td>
+                <td>{item.uhrzeit}</td>
+                <td>{item.name}</td>
+                <td>{item.zimmer}</td>
+                <td>{item.kommentar}</td>
+                <td>{euro.format(item.differenz)}</td>
+                <td>{euro.format(item.geld[0])}</td>
+                <td>{euro.format(item.geld[1])}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <button className="btn btn-primary btn-lg" onClick={() => downloadCSV()}>CSV Datei herunterladen</button>
     </div>
   );
 }
