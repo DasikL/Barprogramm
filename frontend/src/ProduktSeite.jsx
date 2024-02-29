@@ -118,74 +118,236 @@ function ProduktSeite() {
     setBild(base64);
   }
 
+  function suche(e) {
+    let input, filter, div, a, i, txtValue;
+    input = e.target.value;
+    filter = input.toUpperCase();
+    div = document.getElementById("produktcards");
+    div = div.getElementsByClassName("col-md-4");
+    for (i = 0; i < div.length; i++) {
+      a = div[i].getElementsByClassName("card-header")[0];
+      txtValue = a.textContent || a.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        div[i].style.display = "";
+      } else {
+        div[i].style.display = "none";
+      }
+    }
+  }
   return (
     <>
-      <div>
-        <h1>Produkte ändern</h1>
+      <div className="container mt-3">
         <form onSubmit={(e) => ändern(e)}>
-          <h2>Geld</h2>
-          <input
-            type="number"
-            id="geld"
-            defaultValue={geld}
-            step="0.01"
-            onChange={(e) => setGeld(e.target.value)}
-          />
-          {produkte.map((produkt) => (
-            <div key={produkt.produktId}>
-              <h2>{produkt.name}</h2>
-              <h3>Bestand:</h3>
-              <input
-                type="number"
-                id={"bestand" + produkt.produktId}
-                defaultValue={produkt.bestand}
-                onChange={(e) => bestand(e)}
-              />
-              <h3>Verkaufspreis:</h3>
-              <input
-                type="number"
-                id={"preis" + produkt.produktId}
-                defaultValue={produkt.preis}
-                onChange={(e) => preis(e)}
-              />
-              <h3>Akiv:</h3>
-              <input
-                type="checkbox"
-                id={"aktiv" + produkt.produktId}
-                defaultChecked={produkt.aktiv}
-                onChange={(e) => aktiv(e)}
-              />
-              <h3>Bild:</h3>
-              <input
-                type="file"
-                id={"bild" + produkt.produktId}
-                onChange={(e) => bild(e)}
-              />
-              <img src={produkt.bild} alt={produkt.name} />
-              <h3>Hinterraumbestand(noch keine Funktion):</h3>
-              <input type="number" />
-              <h3>Einkaufspreis(noch keine Funktion):</h3>
-              <input type="number" />
+          <div className="row">
+            <div className="col-6">
+              <h1>Produkte ändern</h1>
             </div>
-          ))}
-          <button>Aktualisieren</button>
+            <div className="col-3 d-grid">
+              <button
+                type="button"
+                className="btn btn-primary btn-lg mb-3"
+                data-bs-toggle="modal"
+                data-bs-target="#neuesProdukt"
+              >
+                neues Produkt hinzufügen
+              </button>
+            </div>
+            <div className="col-3 d-grid">
+              <input
+                type="submit"
+                value="Änderungen speichern"
+                className="btn btn-primary btn-lg mb-3"
+              />
+            </div>
+          </div>
+          <hr className="mt-2 mb-3" />
+          <div className="mb-5">
+            <label htmlFor="geld" className="form-label">
+              Geldbestand:
+            </label>
+            <input
+              type="number"
+              id="geld"
+              className="form-control"
+              defaultValue={geld}
+              step="0.01"
+              onChange={(e) => setGeld(e.target.value)}
+            />
+          </div>
+          <input
+            type="text"
+            id="suchen"
+            placeholder="Produkt suchen"
+            onChange={(e) => suche(e)}
+            className="form-control mb-3"
+          />
+          <div className="row row-cols-auto g-4" id="produktcards">
+            {produkte.map((produkt) => (
+              <div
+                className="col-md-4 col-lg-3 mb-2 mb-sm-0"
+                key={produkt.produktId}
+              >
+                <div className="card">
+                  <div className="card-header">
+                    <h3>{produkt.name}</h3>
+                  </div>
+                  <div className="card-body">
+                    <img
+                      src={produkt.bild}
+                      alt={produkt.name}
+                      className="card-img-top"
+                    />
+                    <div className="mb-3">
+                      <label
+                        htmlFor={"bestand" + produkt.produktId}
+                        className="form-label"
+                      >
+                        Bestand:
+                      </label>
+                      <input
+                        type="number"
+                        id={"bestand" + produkt.produktId}
+                        className="form-control"
+                        defaultValue={produkt.bestand}
+                        onChange={(e) => bestand(e)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor={"preis" + produkt.produktId}
+                        className="form-label"
+                      >
+                        Preis:
+                      </label>
+                      <input
+                        type="number"
+                        id={"preis" + produkt.produktId}
+                        className="form-control"
+                        defaultValue={produkt.preis}
+                        onChange={(e) => preis(e)}
+                      />
+                    </div>
+                    <div className="form-check form-switch mb-3">
+                      <input
+                        type="checkbox"
+                        role="switch"
+                        className="form-check-input"
+                        id={"aktiv" + produkt.produktId}
+                        defaultChecked={produkt.aktiv}
+                        onChange={(e) => aktiv(e)}
+                      />
+                      <label
+                        htmlFor={"aktiv" + produkt.produktId}
+                        className="form-check-label"
+                      >
+                        Aktiv
+                      </label>
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor={"bild" + produkt.produktId}
+                        className="form-label"
+                      >
+                        Bild:
+                      </label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        id={"bild" + produkt.produktId}
+                        onChange={(e) => bild(e)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </form>
       </div>
-      <div>
-        <h1>Neues Produkt hinzufügen</h1>
-        <form onSubmit={(e) => hinzufügen(e)}>
-          <h3>Name:</h3>
-          <input type="text" />
-          <h3>Bestand:</h3>
-          <input type="number" />
-          <h3>Verkaufspreis:</h3>
-          <input type="number" step="0.01" />
-          <h3>Aktiv:</h3>
-          <input type="checkbox" />
-          <h3>Bild:</h3>
-          <input type="file" onChange={(e) => bild2(e)} />
-          <button>Hinzufügen</button>
-        </form>
+      <div
+        className="modal"
+        id="neuesProdukt"
+        tabIndex="-1"
+        aria-labelledby="neuLabel"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title" id="neuLabel">
+                Produkt hinzufügen
+              </h1>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <form onSubmit={(e) => hinzufügen(e)}>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label htmlFor="name" className="form-label">
+                    Name:
+                  </label>
+                  <input type="text" className="form-control" required />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="bestand" className="form-label">
+                    Bestand:
+                  </label>
+                  <input type="number" className="form-control" required />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="preis" className="form-label">
+                    Preis:
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="form-control"
+                    required
+                  />
+                </div>
+                <div className="mb-3 form-check form-switch">
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    id="aktiv"
+                    className="form-check-input"
+                  />
+                  <label className="form-check-label" htmlFor="aktiv">
+                    Aktiv
+                  </label>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="bild" className="form-label">
+                    Bild:
+                  </label>
+                  <input
+                    type="file"
+                    onChange={(e) => bild2(e)}
+                    className="form-control"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <input
+                  type="submit"
+                  value="Produkt hinzufügen"
+                  className="btn btn-primary"
+                />
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Abbrechen
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </>
   );

@@ -17,7 +17,7 @@ function App() {
 
   const [produkte, setProdukte] = useState([]);
   const [geld, setGeld] = useState(0.0);
-    
+
 
   /*
     TODO:
