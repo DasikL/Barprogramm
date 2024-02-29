@@ -5,14 +5,22 @@ import { BardienstContext, GeldContext } from "./App";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function Barliste(props) {
+  
+
+  //Variables
+
+
   let bardienst = useContext(BardienstContext);
   let geldbestand = useContext(GeldContext);
   const navigate = useNavigate();
+
+  //funcion for money formatting
   let euro = Intl.NumberFormat("de-DE", {
     style: "currency",
     currency: "EUR",
   });
 
+  //Initialize states from last session or empty
   const [differenz, setDifferenz] = useState(0);
   const [anfangsbestand, setAnfangsbestang] = useState(() => {
     if (localStorage.getItem("bardienst")) {
@@ -30,12 +38,19 @@ function Barliste(props) {
   });
   const [activeTabs, setActiveTabs] = useState({});
 
+  
+
+  //useEffects
+  
+  
+  //Make sure someone is doing a bardienst before they can access the page
   useEffect(() => {
     if (!localStorage.getItem("loggedIn")) {
       navigate("/");
     }
   }, []);
 
+  //Save the bardienst in localstorage so the user can reload or close the page without losing the data
   useEffect(() => {
     if (
       props.props.length > 0 &&
@@ -50,6 +65,8 @@ function Barliste(props) {
     }
   }, [props.props]);
 
+
+  //Calculate the difference of all products and the money when something changes
   useEffect(() => {
     let result = 0;
     Object.keys(anfangsbestand).forEach((key) => {
@@ -68,16 +85,18 @@ function Barliste(props) {
     setDifferenz(result);
   }, [anfangsbestand, endbestand, bardienst]);
 
+  //Set the difference in the bardienst context so it can be uploaded
+  //needed to be a seperate useEffect because else it woudn't work(I don't know why)
   useEffect(() => {
     bardienst[1]((prev) => ({ ...prev, differenz: differenz }));
   }, [differenz]);
 
-  const upload = (e) => {
-    if (checkInput() === false) {
-      e.preventDefault();
-      return;
-    }
 
+  //Functions
+
+  
+  //Upload the bardienst to the server and reset the states
+  const upload = (e) => {
     fetch("http://localhost:8080/api/v1/bardienst/create", {
       method: "POST",
       headers: {
@@ -103,28 +122,9 @@ function Barliste(props) {
     e.preventDefault();
   };
 
-  function checkInput() {
-    let check = true;
-    if (
-      Object.keys(anfangsbestand).length !== props.props.length ||
-      Object.keys(endbestand).length !== props.props.length
-    ) {
-      alert("Bitte füllen Sie alle Felder aus!");
-      return false;
-    }
-    Object.keys(anfangsbestand).forEach((key) => {
-      const anfang = parseInt(anfangsbestand[key]);
-      const end = parseInt(endbestand[key]);
-      if (anfang < end) {
-        check = false;
-      }
-    });
-    if (!check) {
-      alert("Endbestand darf nicht größer als Anfangsbestand sein!");
-      return false;
-    }
-  }
 
+  //Change the bestand of a product and change the color of the input field
+  //Bestand muss hier nochmal gespeichert werden, da sonst die Vorherigen Werte(vom letzten render) in Bardienst gespeichert werden
   function anfangsbestandChange(e, item) {
     let bestand = anfangsbestand;
     bestand[item.produktId] = e.target.value;
@@ -145,7 +145,6 @@ function Barliste(props) {
   }
 
   function endbestandChange(e, item) {
-    //Bestand muss hier nochmal gespeichert werden, da sonst die Vorherigen Werte in Bardienst gespeichert werden
     let bestand = endbestand;
     bestand[item.produktId] = e.target.value;
 
@@ -156,6 +155,7 @@ function Barliste(props) {
     bardienst[1]((prev) => ({ ...prev, endbestand: bestand }));
   }
 
+  //Change the money and change the color of the input field
   function geldChange(e, index) {
     let geld = bardienst[0].geld;
     if (index === 0 && e.target.value !== geldbestand[0].toString()) {
@@ -171,6 +171,7 @@ function Barliste(props) {
     bardienst[1]((prev) => ({ ...prev, kommentar: e.target.value }));
   }
 
+  //functionality for buttons to change the active tab
   function toggleTabs(bool) {
     if (bool) {
       props.props.forEach((item) => {
@@ -206,6 +207,18 @@ function Barliste(props) {
     }
   }
 
+  function activateFertigModal(e) {
+    e.preventDefault();
+    let myModal = new bootstrap.Modal(document.getElementById("fertigModal"), {
+      keyboard: false,
+    });
+    myModal.show();
+  }
+
+  //Components
+
+
+  //Modal for the end of the bardienst
   function FertigModal() {
     return (
       <div
@@ -265,14 +278,7 @@ function Barliste(props) {
     );
   }
 
-  function activateFertigModal(e) {
-    e.preventDefault();
-    let myModal = new bootstrap.Modal(document.getElementById("fertigModal"), {
-      keyboard: false,
-    });
-    myModal.show();
-  }
-
+  //Site
   return (
     <>
       <form onSubmit={(e) => activateFertigModal(e)}>
@@ -338,6 +344,7 @@ function Barliste(props) {
 
           <div className="row row-cols-auto g-4" id="produktcards">
             {props.props.map((item, index) => {
+              
               return (
                 <div
                   className="col-md-4 col-sm-6 col-lg-3 mb-3 mb-sm-0"

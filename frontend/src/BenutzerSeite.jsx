@@ -21,7 +21,7 @@ function Benutzerseite() {
       .then((data) => {
         setBenutzer(data);
       });
-  }, []);
+  }, [benutzerSelected]);
 
   function showBenutzer(benutzer) {
     setBenutzerSelected(true);
@@ -43,7 +43,8 @@ function Benutzerseite() {
         .then((data) => {
           console.log(data);
         });
-      navigate("benutzer");
+      setBenutzerSelected(false);
+      setSingleBenutzer({});
     }
     e.preventDefault();
   }

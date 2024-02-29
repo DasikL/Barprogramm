@@ -4,6 +4,11 @@ import { useNavigate } from "react-router-dom";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function Login() {
+
+
+  //Variables
+
+
   const bardienst = useContext(BardienstContext);
   const navigate = useNavigate();
 
@@ -11,108 +16,31 @@ function Login() {
   const [znummer, setZnummer] = useState("");
 
   const zimmer = [
-    "001",
-    "002",
-    "003",
-    "004",
-    "005",
-    "050",
-    "051",
-    "052",
-    "053",
-    "054",
-    "055",
-    "056",
-    "057",
-    "058",
-    "059",
-    "060",
-    "100",
-    "101",
-    "102",
-    "103",
-    "104",
-    "105",
-    "106",
-    "107",
-    "108",
-    "109",
-    "110",
-    "111",
-    "112",
-    "113",
-    "150",
-    "151",
-    "152",
-    "153",
-    "154",
-    "155",
-    "156",
-    "157",
-    "158",
-    "159",
-    "160",
-    "200",
-    "201",
-    "202",
-    "203",
-    "204",
-    "205",
-    "206",
-    "207",
-    "208",
-    "209",
-    "210",
-    "211",
-    "212",
-    "213",
-    "250",
-    "251",
-    "252",
-    "253",
-    "254",
-    "255",
-    "256",
-    "257",
-    "258",
-    "259",
-    "260",
-    "300",
-    "301",
-    "302",
-    "303",
-    "304",
-    "305",
-    "306",
-    "307",
-    "308",
-    "309",
-    "310",
-    "311",
-    "312",
-    "313",
-    "350",
-    "351",
-    "352",
-    "353",
-    "354",
-    "355",
-    "356",
-    "357",
-    "358",
-    "359",
-    "360",
+    "001", "002", "003", "004", "005",
+    "050", "051", "052", "053", "054", "055", "056", "057", "058", "059", "060",
+    "100", "101", "102", "103", "104", "105", "106", "107", "108", "109", "110", "111", "112", "113",
+    "150", "151", "152", "153", "154", "155", "156", "157", "158", "159", "160",
+    "200", "201", "202", "203", "204", "205", "206", "207", "208", "209", "210", "211", "212", "213",
+    "250", "251", "252", "253", "254", "255", "256", "257", "258", "259", "260",
+    "300", "301", "302", "303", "304", "305", "306", "307", "308", "309", "310", "311", "312", "313",
+    "350", "351", "352", "353", "354", "355", "356", "357", "358", "359", "360",
   ];
 
+  //make sure that the user is not logged in
   useEffect(() => {
     if (localStorage.getItem("loggedIn")) {
       navigate("/barliste");
     }
   }, []);
 
+
+  //Functions
+
+
+  //function to start the bardienst and initialize the bardienst object
   function bardienstBeginnen() {
     const date = new Date();
-    bardienst[1]((prev) => ({
+    bardienst[1](() => ({
       name: name,
       zimmer: znummer,
       datum: date.toISOString().split("T")[0],
@@ -124,6 +52,7 @@ function Login() {
     localStorage.setItem("loggedIn", true);
   }
 
+  //function to check if the user is already in the system
   async function checkBenutzer(zimmernummer) {
     const response = await fetch(
       "http://localhost:8080/api/v1/benutzer/check/" +
@@ -136,10 +65,12 @@ function Login() {
     return data;
   }
 
+  //function to handle the submit of the form
   async function handleSubmit(e) {
     e.preventDefault();
 
     const zimmerinput = document.getElementById("znummer");
+    // Check if the zimmernummer is valid
     if (!zimmer.includes(znummer)) {
       zimmerinput.setCustomValidity(
         "Bitte geben Sie eine gültige Zimmernummer ein",
@@ -154,10 +85,12 @@ function Login() {
       navigate("/barliste");
       return;
     }
+    //If the user is not in the system, show the modal
     const modal = new bootstrap.Modal("#modal");
     modal.show();
   }
 
+  //create a new user and start the bardienst
   function ersterBardienst() {
     fetch("http://localhost:8080/api/v1/benutzer/create", {
       method: "POST",
@@ -170,18 +103,16 @@ function Login() {
     navigate("/barliste");
   }
 
+  //function to handle the case when the user moved to another room
   async function umgezogen() {
     let alteNummer = prompt("Bitte geben Sie die alte Zimmernummer ein");
     if (zimmer.includes(alteNummer)) {
+      //check if the user is already in the system
       const exists = await checkBenutzer(alteNummer);
+
       if (exists) {
         fetch(
-          "http://localhost:8080/api/v1/benutzer/update/" +
-            znummer +
-            "/" +
-            name +
-            "/" +
-            alteNummer,
+          "http://localhost:8080/api/v1/benutzer/update/"+znummer+"/"+name+"/"+alteNummer,
           {
             method: "PUT",
           },
@@ -194,56 +125,18 @@ function Login() {
     }
   }
 
+  //Reset custom validity because if the user entered an invalid zimmernummer and then a valid one, the custom validity would still be set
   function handleZnummerChange(e) {
-    // Reset custom validity because if the user entered an invalid zimmernummer and then a valid one, the custom validity would still be set
     const zimmerinput = document.getElementById("znummer");
     zimmerinput.setCustomValidity("");
     zimmerinput.reportValidity();
     setZnummer(e.target.value);
   }
 
-  // Idee: Videoerklärung für den Benutzer beim ersten Bardienst
-
-  return (
-    <>
-      <div className="container">
-        <div className="position-absolute top-50 start-50 translate-middle">
-          <h1 className="text-center">Login</h1>
-          <form onSubmit={(e) => handleSubmit(e)} className="needs-validation">
-            <div className="row mb-3">
-              <label htmlFor="name" className="form-label">
-                Name:
-              </label>
-              <input
-                type="text"
-                id="name"
-                className="form-control"
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="row mb-3">
-              <label htmlFor="znummer" className="form-label">
-                Zimmernummer:
-              </label>
-              <input
-                type="number"
-                id="znummer"
-                className="form-control"
-                onChange={(e) => handleZnummerChange(e)}
-                required
-              />
-            </div>
-            <div className="row mb-3">
-              <input
-                type="submit"
-                value="Bardienst beginnen"
-                className="btn btn-primary"
-              />
-            </div>
-          </form>
-        </div>
-      </div>
+  //Idee: Videoerklärung für den Benutzer beim ersten Bardienst
+  
+  function Modal() {
+    return (
       <div
         className="modal fade"
         id="modal"
@@ -291,6 +184,50 @@ function Login() {
           </div>
         </div>
       </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="container">
+        <div className="position-absolute top-50 start-50 translate-middle">
+          <h1 className="text-center">Login</h1>
+          <form onSubmit={(e) => handleSubmit(e)} className="needs-validation">
+            <div className="row mb-3">
+              <label htmlFor="name" className="form-label">
+                Name:
+              </label>
+              <input
+                type="text"
+                id="name"
+                className="form-control"
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="row mb-3">
+              <label htmlFor="znummer" className="form-label">
+                Zimmernummer:
+              </label>
+              <input
+                type="number"
+                id="znummer"
+                className="form-control"
+                onChange={(e) => handleZnummerChange(e)}
+                required
+              />
+            </div>
+            <div className="row mb-3">
+              <input
+                type="submit"
+                value="Bardienst beginnen"
+                className="btn btn-primary"
+              />
+            </div>
+          </form>
+        </div>
+      </div>
+      <Modal />
     </>
   );
 }

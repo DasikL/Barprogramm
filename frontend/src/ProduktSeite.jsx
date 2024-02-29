@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
+import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function ProduktSeite() {
+  //Variables
+
   const [produkte, setProdukte] = useState([]);
   const [neuesBild, setBild] = useState("");
   const [geld, setGeld] = useState();
 
+  const [modalInstance, setModalInstance] = useState();
+  const [modalElement, setModalElement] = useState();
+
+  //Functions
+
+  //gets products and money from the server
   useEffect(() => {
     fetch("http://localhost:8080/api/v1/produkt")
       .then((response) => response.json())
@@ -16,6 +25,20 @@ function ProduktSeite() {
       });
   }, []);
 
+  useEffect(() => {
+    let backdrops = document.getElementsByClassName("modal-backdrop");
+    if (backdrops.length > 1) {
+      backdrops[0].remove();
+    }
+    setModalElement(document.getElementById("neuesProdukt"));
+    if (modalElement) {
+      modalElement.addEventListener("show.bs.modal", function (event) {
+        setModalInstance(bootstrap.Modal.getInstance(modalElement));
+      });
+    }
+  });
+
+  //uploades changes to the database
   function ändern(e) {
     produkte.forEach((produkt) => {
       fetch("http://localhost:8080/api/v1/produkt/change", {
@@ -38,17 +61,7 @@ function ProduktSeite() {
   }
 
   function hinzufügen(e) {
-    if (
-      neuesBild === "" ||
-      e.target[0].value === "" ||
-      e.target[1].value === "" ||
-      e.target[2].value === ""
-    ) {
-      alert("Bitte füllen Sie alle Felder aus!");
-      e.preventDefault();
-      return;
-    }
-
+    e.preventDefault();
     fetch("http://localhost:8080/api/v1/produkt/create", {
       method: "POST",
       headers: {
@@ -62,8 +75,8 @@ function ProduktSeite() {
         bild: neuesBild,
       }),
     });
-    alert("Produkt hinzugefügt");
-    e.preventDefault();
+    modalInstance.hide();
+    e.target.reset();
   }
 
   function bestand(e) {
@@ -265,7 +278,7 @@ function ProduktSeite() {
         </form>
       </div>
       <div
-        className="modal"
+        className="modal fade"
         id="neuesProdukt"
         tabIndex="-1"
         aria-labelledby="neuLabel"

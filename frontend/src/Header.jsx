@@ -1,12 +1,25 @@
-import { useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { ObkContext } from "./App";
 import { useNavigate } from "react-router-dom";
 
 function Header() {
+  //Variables
+
   const navigate = useNavigate();
   const obk = useContext(ObkContext);
   const [password, setPassword] = useState("");
 
+  //Functions
+
+  useEffect(() => {
+    let backdrops = document.getElementsByClassName("offcanvas-backdrop");
+    console.log(backdrops);
+    if (backdrops.length > 1) {
+      backdrops[0].remove();
+    }
+  });
+
+  //function to check if the password is correct
   async function checkOBK() {
     const response = await fetch("http://localhost:8080/api/v1/password", {
       method: "POST",
@@ -34,18 +47,19 @@ function Header() {
   }
 
   if (obk[0]) {
+    //show the menu for the OBK
     return (
       <>
         <div className="navbar navbar-expand-lg bg-body-tertiary">
           <div className="container-fluid">
-            <a href="/" className="navbar-brand">
+            <a className="navbar-brand" href="#" onClick={() => navigate("/")}>
               Barprogramm
             </a>
             <button
               type="button"
               className="btn btn-primary"
-              data-bs-toggle="offcanvas"
               data-bs-target="#offcanvasRight"
+              data-bs-toggle="offcanvas"
             >
               Menu
             </button>
@@ -69,18 +83,33 @@ function Header() {
           </div>
           <div className="offcanvas-body">
             <ul className="nav flex-column nav-pills nav-fill">
-              <li className="nav-item"> 
-                <button className="nav-link active" aria-current="page" data-bs-toggle="pill" onClick={() => navigate("/obk/produkt")}>
+              <li className="nav-item">
+                <button
+                  className="nav-link active"
+                  aria-current="page"
+                  data-bs-toggle="pill"
+                  onClick={() => navigate("/obk/produkt")}
+                >
                   Produkte
                 </button>
               </li>
               <li className="nav-item">
-                <button className="nav-link" aria-current="page" data-bs-toggle="pill" onClick={() => navigate("/obk/benutzer")}>
+                <button
+                  className="nav-link"
+                  aria-current="page"
+                  data-bs-toggle="pill"
+                  onClick={() => navigate("/obk/benutzer")}
+                >
                   Benutzer
                 </button>
               </li>
               <li className="nav-item">
-                <button className="nav-link" aria-current="page" data-bs-toggle="pill" onClick={() => navigate("/obk/bardienst")}>
+                <button
+                  className="nav-link"
+                  aria-current="page"
+                  data-bs-toggle="pill"
+                  onClick={() => navigate("/obk/bardienst")}
+                >
                   Bardienste
                 </button>
               </li>
@@ -89,9 +118,9 @@ function Header() {
           <div className="offcanvas-footer">
             <button
               type="button"
-              className="btn btn-danger w-100 justify-content-center m-0" 
+              className="btn btn-danger w-100 justify-content-center m-0"
               data-bs-toggle="offcanvas"
-              style={{borderRadius: "0px"}}
+              style={{ borderRadius: "0px" }}
               onClick={() => {
                 obk[1](false);
                 navigate("/");
@@ -103,12 +132,15 @@ function Header() {
         </div>
       </>
     );
-  } else {
+  }
+
+  //show the login form if obk is not logged in
+  else {
     return (
       <>
         <div className="navbar navbar-expand-lg bg-body-tertiary">
           <div className="container-fluid">
-            <a href="/" className="navbar-brand">
+            <a href="#" className="navbar-brand" onClick={() => navigate("/")}>
               Barprogramm
             </a>
             <button
