@@ -59,6 +59,11 @@ public class BardienstService {
         return bardienst;
     }
 
+    public Bardienst createOBKBardienst(Bardienst bardienst) {
+        bardienstRepository.insert(bardienst);
+        return bardienst;
+    }
+
 
     public Optional<List<Bardienst>> getBardiensteByZimmer(String zimmer) {
         Benutzer b = benutzerRepository.findByZimmer(zimmer).orElse(null);

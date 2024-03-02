@@ -37,41 +37,9 @@ public class ProduktService {
     }
 
     public Produkt createProdukt(Produkt produkt) {
-        produkt.setProduktId(produktRepository.findAll().size() + 1);
+        int id = (produktRepository.findAll().get(produktRepository.findAll().size()-1).getProduktId()) +1;
+        produkt.setProduktId(id);
         return produktRepository.insert(produkt);
-    }
-
-    public Integer changeBestand(int produktId, int bestand) {
-
-        mongoTemplate.update(Produkt.class)
-                .matching(Criteria.where("produktId").is(produktId))
-                .apply(new Update().set("bestand", bestand))
-                .first();
-        return bestand;
-    }
-
-    public Boolean changeAktiv(int produktId, boolean aktiv) {
-        mongoTemplate.update(Produkt.class)
-                .matching(Criteria.where("produktId").is(produktId))
-                .apply(new Update().set("aktiv", aktiv))
-                .first();
-        return aktiv;
-    }
-
-    public Float changePreis(int produktId, float preis) {
-        mongoTemplate.update(Produkt.class)
-                .matching(Criteria.where("produktId").is(produktId))
-                .apply(new Update().set("preis", preis))
-                .first();
-        return preis;
-    }
-
-    public String changeBild(int produktId, String pfad) {
-        mongoTemplate.update(Produkt.class)
-                .matching(Criteria.where("produktId").is(produktId))
-                .apply(new Update().set("bild", pfad))
-                .first();
-        return pfad;
     }
 
     public Produkt changeProdukt(Produkt produkt) {
@@ -92,6 +60,11 @@ public class ProduktService {
                 .apply(new Update().set("bild", produkt.getBild()))
                 .first();
         return produkt;
+    }
+
+    public Produkt deleteProdukt(int produktId) {
+        Produkt p = produktRepository.findByProduktId(produktId);
+        return produktRepository.deleteByProduktId(produktId);
     }
 
     public Produkt getProduktById(int produktId) {

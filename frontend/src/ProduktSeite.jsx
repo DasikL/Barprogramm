@@ -2,19 +2,35 @@ import { useEffect, useState } from "react";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function ProduktSeite() {
+  //TODO: Log the changes as a bardienst in the database and add fields for before and after change stocks
+
   //Variables
 
   const [produkte, setProdukte] = useState([]);
   const [neuesBild, setBild] = useState("");
   const [geld, setGeld] = useState();
+  const [singleProdukt, setSingleProdukt] = useState();
 
-  const [modalInstance, setModalInstance] = useState();
-  const [modalElement, setModalElement] = useState();
+  let date = new Date();
+  const [bardienst, setBardienst] = useState({
+    name: "obk",
+    datum: date.toISOString().split("T")[0],
+    uhrzeit: date.toISOString().split("T")[1].split(".")[0],
+    kommentar: "",
+    geld: [],
+    differenz: 0,
+    anfangsbestand: {},
+    endbestand: {},
+  });
 
   //Functions
 
   //gets products and money from the server
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  function fetchData() {
     fetch("http://localhost:8080/api/v1/produkt")
       .then((response) => response.json())
       .then((data) => setProdukte(data));
@@ -23,23 +39,31 @@ function ProduktSeite() {
       .then((data) => {
         setGeld(data);
       });
-  }, []);
-
-  useEffect(() => {
-    let backdrops = document.getElementsByClassName("modal-backdrop");
-    if (backdrops.length > 1) {
-      backdrops[0].remove();
-    }
-    setModalElement(document.getElementById("neuesProdukt"));
-    if (modalElement) {
-      modalElement.addEventListener("show.bs.modal", function (event) {
-        setModalInstance(bootstrap.Modal.getInstance(modalElement));
-      });
-    }
-  });
+  }
 
   //uploades changes to the database
-  function ändern(e) {
+  async function ändern(e) {
+    e.preventDefault();
+    console.log(bardienst);
+    await produktfetch();
+    await fetch("http://localhost:8080/api/v1/geld", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(geld),
+    });
+    await fetch("http://localhost:8080/api/v1/bardienst/obk", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bardienst),
+    });
+    window.location.reload();
+  }
+
+  async function produktfetch() {
     produkte.forEach((produkt) => {
       fetch("http://localhost:8080/api/v1/produkt/change", {
         method: "PUT",
@@ -49,20 +73,12 @@ function ProduktSeite() {
         body: JSON.stringify(produkt),
       });
     });
-    fetch("http://localhost:8080/api/v1/geld", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(geld),
-    });
-    alert("Änderungen gespeichert");
-    e.preventDefault();
   }
 
-  function hinzufügen(e) {
+
+  async function hinzufügen(e) {
     e.preventDefault();
-    fetch("http://localhost:8080/api/v1/produkt/create", {
+    await fetch("http://localhost:8080/api/v1/produkt/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -75,22 +91,39 @@ function ProduktSeite() {
         bild: neuesBild,
       }),
     });
-    modalInstance.hide();
-    e.target.reset();
+    window.location.reload();
   }
 
-  function bestand(e) {
+  function endbestand(e, produktId) {
     setProdukte(
       produkte.map((produkt) => {
-        if (produkt.produktId === parseInt(e.target.id.substring(7))) {
+        if (produkt.produktId === produktId) {
           return { ...produkt, bestand: parseInt(e.target.value) };
         }
         return produkt;
       }),
     );
+    let current = bardienst
+    if (!bardienst.anfangsbestand[produktId]) {
+      current.anfangsbestand[produktId] = document.getElementById("abestand" + produktId).value;
+    }
+    current.endbestand[produktId] = e.target.value;
+    setBardienst(current);
+  }
+
+
+  function anfangsbestand(e) {
+    setBardienst({
+      ...bardienst,
+      anfangsbestand: {
+        ...bardienst.anfangsbestand,
+        [e.target.id.substring(8)]: parseInt(e.target.value),
+      },
+    });
   }
 
   function preis(e) {
+    console.log(bardienst);
     setProdukte(
       produkte.map((produkt) => {
         if (produkt.produktId === parseInt(e.target.id.substring(5))) {
@@ -125,6 +158,25 @@ function ProduktSeite() {
     );
   }
 
+  function anfangsgeld(e) {
+    let geld = bardienst.geld;
+    geld[0] = parseFloat(e.target.value);
+    setBardienst({
+      ...bardienst,
+      geld: geld,
+    });
+  }
+
+  function endgeld(e) {
+    let geld = bardienst.geld;
+    geld[1] = parseFloat(e.target.value);
+    setBardienst({
+      ...bardienst,
+      geld: geld,
+    });
+    setGeld(parseFloat(e.target.value));
+  }
+
   async function bild2(e) {
     const file = e.target.files[0];
     const base64 = await converttoBase64(file);
@@ -146,6 +198,17 @@ function ProduktSeite() {
         div[i].style.display = "none";
       }
     }
+  }
+
+  async function löschen() {
+    let produktId = singleProdukt.produktId;
+    await fetch("http://localhost:8080/api/v1/produkt/" + produktId, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    fetchData();
   }
   return (
     <>
@@ -174,18 +237,33 @@ function ProduktSeite() {
             </div>
           </div>
           <hr className="mt-2 mb-3" />
-          <div className="mb-5">
-            <label htmlFor="geld" className="form-label">
-              Geldbestand:
-            </label>
-            <input
-              type="number"
-              id="geld"
-              className="form-control"
-              defaultValue={geld}
-              step="0.01"
-              onChange={(e) => setGeld(e.target.value)}
-            />
+          <div className="mb-5 row">
+            <div className="col">
+              <label htmlFor="geld" className="form-label">
+                Anfangsbestand Geld:
+              </label>
+              <input
+                type="number"
+                id="ageld"
+                className="form-control"
+                defaultValue={geld}
+                step="0.01"
+                onChange={(e) => anfangsgeld(e)}
+              />
+            </div>
+            <div className="col">
+              <label htmlFor="geld" className="form-label">
+                Endbestand Geld:
+              </label>
+              <input
+                type="number"
+                id="egeld"
+                className="form-control"
+                defaultValue={geld}
+                step="0.01"
+                onChange={(e) => endgeld(e)}
+              />
+            </div>
           </div>
           <input
             type="text"
@@ -219,10 +297,17 @@ function ProduktSeite() {
                       </label>
                       <input
                         type="number"
-                        id={"bestand" + produkt.produktId}
+                        id={"abestand" + produkt.produktId}
+                        className="form-control mb-2"
+                        defaultValue={produkt.bestand}
+                        onChange={(e) => anfangsbestand(e)}
+                      />
+                      <input
+                        type="number"
+                        id={"ebestand" + produkt.produktId}
                         className="form-control"
                         defaultValue={produkt.bestand}
-                        onChange={(e) => bestand(e)}
+                        onChange={(e) => endbestand(e, produkt.produktId)}
                       />
                     </div>
                     <div className="mb-3">
@@ -270,12 +355,66 @@ function ProduktSeite() {
                         onChange={(e) => bild(e)}
                       />
                     </div>
+                    <div className="mb-3 d-grid d-flex justify-content-end">
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#löschen"
+                        onClick={() => setSingleProdukt(produkt)}
+                      >
+                        Produkt löschen
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         </form>
+      </div>
+      <div
+        className="modal fade"
+        id="löschen"
+        tabIndex="-1"
+        aria-labelledby="löschenLabel"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title" id="löschenLabel">
+                Produkt löschen
+              </h1>
+
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <p>Wollen Sie das Produkt wirklich löschen?</p>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Abbrechen
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                data-bs-dismiss="modal"
+                onClick={() => löschen()}
+              >
+                Löschen
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       <div
         className="modal fade"

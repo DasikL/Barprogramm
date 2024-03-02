@@ -29,7 +29,6 @@ function App() {
     Bei Reload nicht ausloggen
     Kommentarfeld
     */
-
   const [bardienst, setBardienst] = useState(() => {
     if(localStorage.getItem("bardienst")){
       return JSON.parse(localStorage.getItem("bardienst"));

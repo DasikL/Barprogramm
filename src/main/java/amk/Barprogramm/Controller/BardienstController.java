@@ -34,6 +34,11 @@ public class BardienstController {
         return new ResponseEntity<Bardienst>(bardienstService.createBardienst(bardienst), HttpStatus.CREATED);
     }
 
+    @PostMapping("/obk")
+    public ResponseEntity<Bardienst> updateBestände(@RequestBody Bardienst bardienst) {
+        return new ResponseEntity<Bardienst>(bardienstService.createOBKBardienst(bardienst), HttpStatus.OK);
+    }
+
     @GetMapping("/{zimmer}")
     public ResponseEntity<Optional<List<Bardienst>>> getBardienstById(@PathVariable String zimmer) {
         return new ResponseEntity<Optional<List<Bardienst>>>(bardienstService.getBardiensteByZimmer(zimmer), HttpStatus.OK);

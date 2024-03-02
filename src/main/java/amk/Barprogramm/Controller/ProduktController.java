@@ -37,29 +37,14 @@ public class ProduktController {
         return new ResponseEntity<Produkt>(produktService.createProdukt(produkt), HttpStatus.CREATED);
     }
 
-    @PutMapping("/bestand/{produktId}")
-    public ResponseEntity<Integer> changeBestand(@PathVariable int produktId, @RequestBody int bestand) {
-        return new ResponseEntity<Integer>(produktService.changeBestand(produktId, bestand), HttpStatus.OK);
-    }
-
-    @PutMapping("/aktiv/{produktId}")
-    public ResponseEntity<Boolean> changeAktiv(@PathVariable int produktId, @RequestBody boolean aktiv) {
-        return new ResponseEntity<Boolean>(produktService.changeAktiv(produktId, aktiv), HttpStatus.OK);
-    }
-
-    @PutMapping("/preis/{produktId}")
-    public ResponseEntity<Float> changePreis(@PathVariable int produktId, @RequestBody float preis) {
-        return new ResponseEntity<Float>(produktService.changePreis(produktId, preis), HttpStatus.OK);
-    }
-
-    @PutMapping("/bild/{produktId}")
-    public ResponseEntity<String> changeBild(@PathVariable int produktId, @RequestBody String pfad){
-        return new ResponseEntity<String>(produktService.changeBild(produktId, pfad), HttpStatus.OK);
-    }
-
     @GetMapping("/{produktId}")
     public ResponseEntity<Produkt> getProduktById(@PathVariable int produktId) {
         return new ResponseEntity<Produkt>(produktService.getProduktById(produktId), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{produktId}")
+    public ResponseEntity<Produkt> deleteProdukt(@PathVariable int produktId) {
+        return new ResponseEntity<Produkt>(produktService.deleteProdukt(produktId), HttpStatus.OK);
     }
 
     @PutMapping("/change")

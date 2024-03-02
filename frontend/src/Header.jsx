@@ -11,14 +11,6 @@ function Header() {
 
   //Functions
 
-  useEffect(() => {
-    let backdrops = document.getElementsByClassName("offcanvas-backdrop");
-    console.log(backdrops);
-    if (backdrops.length > 1) {
-      backdrops[0].remove();
-    }
-  });
-
   //function to check if the password is correct
   async function checkOBK() {
     const response = await fetch("http://localhost:8080/api/v1/password", {

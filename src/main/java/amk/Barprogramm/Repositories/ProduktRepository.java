@@ -12,4 +12,6 @@ public interface ProduktRepository extends MongoRepository<Produkt, ObjectId> {
     List<Produkt> findByAktiv(boolean aktiv);
 
     Produkt findByProduktId(int produktId);
+
+    Produkt deleteByProduktId(int produktId);
 }
