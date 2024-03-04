@@ -37,7 +37,7 @@ function Barliste(props) {
     }
   });
   const [activeTabs, setActiveTabs] = useState({});
-
+  const [bilder, setBilder] = useState({});
   
 
   //useEffects
@@ -63,6 +63,15 @@ function Barliste(props) {
         }));
       });
     }
+    let curbild = bilder;
+    props.props.map((item) => {
+      fetch("http://localhost:8080/storage/download?filename=" + item.bild)
+        .then((response) => response.blob())
+        .then((data) => {
+          curbild[item.produktId] = URL.createObjectURL(data);
+        });
+    });
+    setBilder(curbild);
   }, [props.props]);
 
 
@@ -76,6 +85,9 @@ function Barliste(props) {
       if (props.props.length > 0) {
         let item = props.props.find((item) => item.produktId == key);
         diff *= item.preis;
+        if(item.preis < 0){
+          diff *= -1;
+        }
       }
       result += diff;
     });
@@ -245,7 +257,37 @@ function Barliste(props) {
               <div className="form-check">
                 <input type="checkbox" className="form-check-input" />
                 <label htmlFor="checkbox1" className="form-check-label">
-                  Checkbox1
+                  Kühlschrank aufgefüllt
+                </label>
+              </div>
+              <div className="form-check">
+                <input type="checkbox" className="form-check-input" />
+                <label htmlFor="checkbox1" className="form-check-label">
+                  Aschenbecher geleert
+                </label>
+              </div>
+              <div className="form-check">
+                <input type="checkbox" className="form-check-input" />
+                <label htmlFor="checkbox1" className="form-check-label">
+                  Bar gefegt
+                </label>
+              </div>
+              <div className="form-check">
+                <input type="checkbox" className="form-check-input" />
+                <label htmlFor="checkbox1" className="form-check-label">
+                  Theke gewischt
+                </label>
+              </div>
+              <div className="form-check">
+                <input type="checkbox" className="form-check-input" />
+                <label htmlFor="checkbox1" className="form-check-label">
+                  Vollen Müll rausgebracht
+                </label>
+              </div>
+              <div className="form-check">
+                <input type="checkbox" className="form-check-input" />
+                <label htmlFor="checkbox1" className="form-check-label">
+                  Die Kasse stimmt
                 </label>
               </div>
               <div className="mb-3">
@@ -342,7 +384,7 @@ function Barliste(props) {
             </button>
           </div>
 
-          <div className="row row-cols-auto g-4" id="produktcards">
+          <div className="pb-5 row row-cols-auto g-4 mb-5" id="produktcards">
             {props.props.map((item, index) => {
               
               return (
@@ -407,7 +449,7 @@ function Barliste(props) {
                             id={item.produktId + "Produkt"}
                           >
                             <img
-                              src={item.bild}
+                              src={bilder[item.produktId]}
                               alt={item.name}
                               className="card-img-top"
                             />

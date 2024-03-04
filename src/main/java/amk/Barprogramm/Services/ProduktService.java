@@ -37,6 +37,10 @@ public class ProduktService {
     }
 
     public Produkt createProdukt(Produkt produkt) {
+        if(produktRepository.findAll().isEmpty()){
+            produkt.setProduktId(1);
+            return produktRepository.insert(produkt);
+        }
         int id = (produktRepository.findAll().get(produktRepository.findAll().size()-1).getProduktId()) +1;
         produkt.setProduktId(id);
         return produktRepository.insert(produkt);

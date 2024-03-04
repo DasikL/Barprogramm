@@ -17,6 +17,7 @@ function App() {
 
   const [produkte, setProdukte] = useState([]);
   const [geld, setGeld] = useState(0.0);
+  const [rerender, setRerender] = useState(false);
 
 
   /*
@@ -58,6 +59,19 @@ function App() {
       return false;
     }
   });
+
+  useEffect(() => {
+    const setTimer = setTimeout(() => {
+      setRerender(!rerender);
+    }, 2500);
+    const setTimer2 = setTimeout(() => {
+      setRerender(!rerender);
+    }, 4000);
+    return () => {
+      clearTimeout(setTimer);
+      clearTimeout(setTimer2);
+    };
+  }, []);
 
   useEffect(() => {
     fetch("http://localhost:8080/api/v1/produkt/aktive")
